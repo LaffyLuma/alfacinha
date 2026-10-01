@@ -13,6 +13,8 @@
     { k: 'cpres', pt: 'Conjuntivo presente', en: 'Present subjunctive', lvl: 'B1' },
     { k: 'cimp', pt: 'Conjuntivo imperfeito', en: 'Past subjunctive', lvl: 'B1' },
     { k: 'cfut', pt: 'Conjuntivo futuro', en: 'Future subjunctive (quando/se…)', lvl: 'B1' },
+    { k: 'infp', pt: 'Infinitivo pessoal', en: 'Personal infinitive (para tu veres, antes de saíres)', lvl: 'B1' },
+    { k: 'hav', pt: 'Haver de + infinitivo', en: 'Going to, with conviction (hei de ir)', lvl: 'B1' },
   ];
   const TENSE = Object.fromEntries(TENSES.map(t => [t.k, t]));
 
@@ -24,6 +26,7 @@
   const FUT = ['ei', 'ás', 'á', 'emos', 'ão'];
   const COND = ['ia', 'ias', 'ia', 'íamos', 'iam'];
   const TER = ['tenho', 'tens', 'tem', 'temos', 'têm'];
+  const HAV = ['hei de', 'hás de', 'há de', 'havemos de', 'hão de'];
 
   // spelling: -ar stem before e
   function arBeforeE(stem) {
@@ -111,13 +114,19 @@
     // particípio
     f.part = o.part || (stem + (type === 'ar' ? 'ado' : 'ido'));
     f.ppc = TER.map(t => t + ' ' + f.part);
+    // infinitivo pessoal: sair → saíres/saírem (hiatus í), pôr → pores
+    const base = v.replace('ô', 'o');
+    const acc = /[aeiou]ir$/.test(v) && !/[gq]uir$/.test(v) ? base.slice(0, -2) + 'ír' : base;
+    f.infp = [v, acc + 'es', v, base + 'mos', acc + 'em'];
+    // haver de + infinitivo
+    f.hav = HAV.map(h => h + ' ' + v);
     // imperativo: tu (affirmative), você, vocês
     const impTu = o.impTu !== undefined ? o.impTu : f.pres[2];
     f.imp = impTu === null ? [null, null, null, null, null] : [null, impTu, f.cpres[2], null, f.cpres[4]];
     // impersonal verbs
     if (def.persons) {
       f.imp = [null, null, null, null, null];
-      for (const k of ['pres', 'pps', 'pimp', 'fut', 'cond', 'cpres', 'cimp', 'cfut', 'ppc']) {
+      for (const k of ['pres', 'pps', 'pimp', 'fut', 'cond', 'cpres', 'cimp', 'cfut', 'ppc', 'infp', 'hav']) {
         f[k] = f[k].map((x, p) => def.persons.includes(p) ? x : null);
       }
     }

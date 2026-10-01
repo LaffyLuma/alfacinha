@@ -63,7 +63,7 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
   };
 
   // ---------- answer checking ----------
-  const norm = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/[.!?¿¡,;:"“”«»…()]/g, ' ').replace(/[-‐–]/g, '-').replace(/\s*-\s*/g, '-').replace(/\s+/g, ' ').trim();
+  const norm = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/[.!?¿¡,;:"“”«»…()]/g, ' ').replace(/[-‐–]/g, '-').replace(/\s*-\s*/g, '-').replace(/\s+/g, ' ').replace(/(^| )(hei|hás|há|hão)-de(?= |$)/g, '$1$2 de').trim(); // pre-2009 spelling "hei-de" is still common
   const strip = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   function checkAnswer(input, expected) {
     const exp = (Array.isArray(expected) ? expected : [expected]).filter(Boolean);

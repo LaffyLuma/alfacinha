@@ -21,10 +21,10 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 |---|---|
 | `index.html` | Shell. Loads the scripts in order: data → conj → fsrs → store → config → core → views → drive → main |
 | `data/verbs.js` | 146 verbs with overrides for irregular forms; sets are `irr` / `stem` / `reg` |
-| `js/conj.js` | EP conjugation engine for 10 tenses (pres, pps, pimp, ppc, imp, fut, cond, cpres, cimp, cfut). Persons 0–4: eu, tu, ele, nós, eles (no vós) |
+| `js/conj.js` | EP conjugation engine for 12 "tenses" (pres, pps, pimp, ppc, imp, fut, cond, cpres, cimp, cfut, plus infp = infinitivo pessoal and hav = haver de + inf). Persons 0–4: eu, tu, ele, nós, eles (no vós) |
 | `data/vocab1.js`, `vocab2.js` | 439 entries: `[word, en, type, 'sentence with {cloze}', sentence_en, theme]` |
 | `data/chunks.js` | 80 expressions: `[chunk, meaning, note, example with {cloze}, example_en]` |
-| `data/drills.js` | 112 context drills: past / ppc / serestar / subj. The answer is generated from `v,t,p` |
+| `data/drills.js` | Context drills: past / ppc / serestar / subj / hipot / infp / pron. The answer is generated from `v,t,p`, except `pron` drills, which carry a literal answer `a` plus `cue` and `pos`. `cond` answers also accept the imperfeito |
 | `data/grammar.js`, `data/partner.js` | Grammar notes (HTML); partner guide, partner cards, writing prompts |
 | `js/fsrs.js` | FSRS-4.5 scheduler with default weights |
 | `js/store.js` | State in localStorage (`pois.state.v1`), optional linked save file (File System Access API), export/import, `merge()` (latest review wins per card, note tombstones, reset-aware), `fingerprint()` |
@@ -41,7 +41,9 @@ Conventions: views render HTML strings into `#view`; buttons use `data-act="name
 ## Testing
 `python3 tests/e2e.py` and `python3 tests/drive_sync.py` both serve `app/` on localhost and need Playwright with Chromium. `node tests/conj.test.js` checks conjugations. The test paths assume the app is at `/home/claude/app`, so adjust `ROOT` / `-d` to wherever this folder lives.
 
+## B1 course
+Ryan's class (Lisbon Language Café B1) is the topic guide, not something to copy: imperfeito, condicional, object pronouns, infinitivo pessoal, haver de, PPC, and the conjuntivo for his class presentations. Don't put classmates' names or the course site password from his handouts into this public repo.
+
 ## Ideas not built yet
-- Drills matched to his B1 course content. Ask him what the class covers.
 - Speaking practice: record yourself and compare against TTS. Avoid the Web Speech API recognition, because it sends audio to Google.
 - Ask the girlfriend to check the example sentences for naturalness. Claude wrote them all.

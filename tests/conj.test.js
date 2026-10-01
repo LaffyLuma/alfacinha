@@ -61,6 +61,10 @@ const spot = [
   [by.ser.imp[1], 'sê'], [by.fazer.imp[1], 'faz'], [by.fazer.imp[2], 'faça'], [by.ir.imp[2], 'vá'], [by['pôr'].imp[1], 'põe'],
   [by.haver.pres[2], 'há'], [by.haver.pps[2], 'houve'], [by.haver.pimp[2], 'havia'], [by.haver.cpres[2], 'haja'], [by.haver.cimp[2], 'houvesse'], [by.haver.cfut[2], 'houver'], [by.haver.pres[0], null],
   [by.chover.pps[2], 'choveu'], [by.chover.imp[2], null], [by.estudar.ppc[0], 'tenho estudado'], [by.fazer.ppc[4], 'têm feito'], [by.poder.imp[1], null],
+  // infinitivo pessoal (hiatus accent on -air/-uir, none after gu/qu) and haver de
+  [by.trabalhar.infp.join(' '), 'trabalhar trabalhares trabalhar trabalharmos trabalharem'], [by.sair.infp.join(' '), 'sair saíres sair sairmos saírem'],
+  [by['pôr'].infp.join(' '), 'pôr pores pôr pormos porem'], [by.fazer.infp[1], 'fazeres'], [by.seguir.infp[4], 'seguirem'], [by.chover.infp[2], 'chover'], [by.chover.infp[0], null],
+  [by.ir.hav.join(', '), 'hei de ir, hás de ir, há de ir, havemos de ir, hão de ir'], [by.haver.hav[2], 'há de haver'],
 ];
 spot.forEach(([g, e], i) => { checks++; if (g !== e) { fails++; console.log('SPOT FAIL', i, g, e); } });
 // No form should contain undefined

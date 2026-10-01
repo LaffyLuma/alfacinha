@@ -55,7 +55,7 @@ var GRAMMAR = [
 <h4>Ficar, the third "to be"</h4>
 <ul><li>Permanent location of places: O museu <b>fica</b> perto do rio.</li><li>Becoming / reacting: <b>Fiquei</b> contente. <b>Ficou</b> zangado.</li><li>Staying: <b>Fico</b> em casa hoje.</li><li>Looking (on someone): Esse casaco <b>fica</b>-te bem.</li></ul>` },
 
-  { id: 'clitics', title: 'Where the little pronouns go (EP!)', lvl: 'A2–B1', html: `
+  { id: 'clitics', title: 'Where the little pronouns go (EP!)', lvl: 'A2–B1', drill: 'pron', html: `
 <p>Object pronouns: <b>me, te, o/a, lhe, nos, vos, os/as, lhes, se</b>. Brazilians put them before the verb. <b>In Portugal the default is after the verb, with a hyphen.</b></p>
 <ul><li><b>Chamo-me</b> Ryan. · <b>Diz-me</b> uma coisa. · <b>Levanto-me</b> às sete. · <b>Dá-me</b> isso.</li></ul>
 <h4>They jump BEFORE the verb after:</h4>
@@ -63,6 +63,32 @@ var GRAMMAR = [
 <h4>Spelling changes after the verb</h4>
 <ul><li>Nós forms drop the -s before <b>-nos</b>: levantamos + nos → <b>levantamo-nos</b>.</li><li>o/a after -r, -s, -z → <b>-lo/-la</b> (drop the consonant): comprar + o → <b>comprá-lo</b>; fiz + o → <b>fi-lo</b>.</li><li>o/a after a nasal sound (-m, -ão, -õe) → <b>-no/-na</b>: dão + o → <b>dão-no</b>.</li></ul>
 <p class="tip">Don't stress about this at A2. Say "chamo-me", "dá-me", "não me…", "já te…" as chunks and the pattern will sink in.</p>` },
+
+  { id: 'objpron', title: 'Lhe or o/a? Direct and indirect object pronouns', lvl: 'B1', drill: 'pron', html: `
+<p>Two questions every time you replace a noun with a pronoun: <b>which pronoun</b> (o/a or lhe?) and <b>where it goes</b> (before or after the verb?).</p>
+<h4>1. Which pronoun?</h4>
+<table><tr><th>Direct: the thing or person the action hits (no preposition)</th><th>Indirect: <em>to / for</em> someone (verb + a)</th></tr>
+<tr><td><b>o, a, os, as</b></td><td><b>lhe, lhes</b></td></tr>
+<tr><td>Vejo <b>a Ana</b> → <b>Vejo-a</b>.</td><td>Telefono <b>ao meu pai</b> → <b>Telefono-lhe</b>.</td></tr>
+<tr><td>Comprei <b>o livro</b> → <b>Comprei-o</b>.</td><td>Dou presentes <b>à minha mãe</b> → <b>Dou-lhe</b> presentes.</td></tr>
+<tr><td>Conheço <b>os teus pais</b> → <b>Conheço-os</b>.</td><td>Escrevo <b>aos meus avós</b> → <b>Escrevo-lhes</b>.</td></tr></table>
+<p><b>me, te, nos</b> do both jobs: <b>Vês-me?</b> (direct) · <b>Dás-me</b> isso? (indirect).</p>
+<p>Common verbs that take <b>a alguém → lhe</b>: dar, oferecer, pedir, telefonar, ligar, dizer, perguntar, responder, escrever, mostrar, emprestar, explicar, agradecer.</p>
+<p class="tip"><b>lhe</b> is for people (and pets). For things you almost always want <b>o/a</b>: O bolo? <b>Comi-o</b> todo.</p>
+<h4>2. Where does it go?</h4>
+<p>After the verb with a hyphen by default. Before the verb after <b>não, nunca, ninguém, nada, já, também, ainda, só, talvez, que, quando, se</b> and question words (see <i>Where the little pronouns go</i>).</p>
+<ul><li>Sim, <b>dou-lhe</b> presentes. · Não, <b>nunca lhe dou</b> chocolates.</li>
+<li>Sim, <b>vejo-a</b> todos os dias. · <b>Onde a compraste?</b></li></ul>
+<h4>3. Compound tenses (ter + particípio)</h4>
+<p>The pronoun goes with <b>ter</b>, never with the particípio:</p>
+<ul><li>Ele <b>tem-lhes telefonado</b>. · Ele <b>não lhes tem telefonado</b>.</li>
+<li>Tens visto a Laura? Sim, <b>tenho-a visto</b>. (Not <s>tenho visto-a</s>.)</li></ul>
+<h4>4. Helper verb + infinitive</h4>
+<p>Attach it to the infinitive and you're always right: <b>Vou dar-lhe</b> isto. <b>Quero perguntar-te</b> uma coisa. (<i>Vou-lhe dar</i> is also heard.) After a trigger: <b>Não lhe vou dar</b>.</p>
+<h4>5. Spelling: -lo, -la, -no, -na</h4>
+<ul><li>After -r, -s, -z the consonant drops and o/a becomes <b>-lo/-la</b>: comprar + o → <b>comprá-lo</b>, vês + a → <b>vê-la</b>, fazemos + os → <b>fazemo-los</b>.</li>
+<li>After a nasal (-m, -ão, -õe) → <b>-no/-na</b>: dão + o → <b>dão-no</b>, põe + a → <b>põe-na</b>.</li></ul>
+<p class="tip">You'll hear <b>lho</b> (lhe + o): <i>Já lho dei.</i> In speech people often just drop the "o": <b>Já lhe dei.</b> That's fine.</p>` },
 
   { id: 'aspect', title: 'Estar a, ir, acabar de: the helper verbs', lvl: 'A1–A2', html: `
 <ul><li><b>estar a + infinitivo</b> = doing right now. <b>Estou a</b> cozinhar. (Brazil says "cozinhando". In Portugal, don't.)</li><li><b>ir + infinitivo</b> = going to. <b>Vou</b> ligar-te amanhã.</li><li><b>acabar de + inf.</b> = have just. <b>Acabei de</b> chegar.</li><li><b>voltar a + inf.</b> = do again. <b>Voltei a</b> perder as chaves.</li><li><b>deixar de + inf.</b> = stop doing. <b>Deixei de</b> fumar.</li><li><b>começar a + inf.</b> = start doing. <b>Comecei a</b> estudar.</li><li><b>costumar + inf.</b> = usually. <b>Costumo</b> jantar às oito.</li><li><b>ter de / ter que + inf.</b> = have to. <b>Tenho de</b> ir.</li><li><b>andar a + inf.</b> = have been doing lately (very EP). <b>Ando a</b> ler um livro ótimo.</li></ul>
@@ -115,6 +141,92 @@ var GRAMMAR = [
 <h4>How to build it</h4>
 <p>Same base as the future subjunctive: <b>eles</b> perfeito minus -ram, then add <b>-sse, -sses, -sse, -ssemos, -ssem</b> (accent on nós: tivéssemos, falássemos, comêssemos).</p>
 <p>Also used after past triggers: Ela pediu que eu <b>trouxesse</b> pão. Embora <b>estivesse</b> cansado…</p>` },
+
+  { id: 'cond', title: 'The condicional: would, could, should', lvl: 'B1', drill: 'hipot', html: `
+<h4>How to build it</h4>
+<p>The whole infinitive + <b>-ia, -ias, -ia, -íamos, -iam</b>. Same endings for -ar, -er and -ir.</p>
+<ul><li>falar → <b>falaria</b> · comer → <b>comeria</b> · ir → <b>iria</b> · gostar → <b>gostaria</b></li>
+<li>Only three irregulars (same stems as the future): fazer → <b>faria</b>, dizer → <b>diria</b>, trazer → <b>traria</b>.</li></ul>
+<h4>When to use it</h4>
+<ul><li><b>Hypotheticals</b>, with se + conjuntivo imperfeito: Se tivesse tempo, <b>viajaria</b> mais.</li>
+<li><b>Politeness</b>: <b>Poderia</b> ajudar-me? <b>Gostaria</b> de marcar uma mesa.</li>
+<li><b>Advice</b>: <b>Deverias</b> descansar. (You should rest.)</li>
+<li><b>Future seen from the past</b>: Ele disse que <b>viria</b> às oito. (He said he would come.)</li>
+<li><b>Guessing about the past</b>: <b>Seriam</b> umas dez horas. (It must have been about ten.)</li></ul>
+<h4>The big EP secret: the imperfeito does the same job</h4>
+<p>In everyday Portuguese speech, the <b>imperfeito</b> very often replaces the condicional. Both are correct; the condicional just sounds more careful or written.</p>
+<table><tr><th>Condicional (careful, written)</th><th>Imperfeito (everyday speech)</th></tr>
+<tr><td><b>Gostaria</b> de um café.</td><td><b>Gostava</b> de um café.</td></tr>
+<tr><td><b>Poderia</b> repetir?</td><td><b>Podia</b> repetir?</td></tr>
+<tr><td>Se ganhasse, <b>compraria</b> uma casa.</td><td>Se ganhasse, <b>comprava</b> uma casa.</td></tr></table>
+<p>In a presentation, the condicional sounds great. With friends, "gostava" and "podia" sound more natural.</p>
+<p class="tip">Pronouns: in writing you may see "dar-lhe-ia" (the pronoun in the middle of the verb). Nobody says that. Use a trigger word (Não lhe daria) or the imperfeito instead (Dava-lhe).</p>` },
+
+  { id: 'infp', title: 'The infinitivo pessoal: a Portuguese superpower', lvl: 'B1', drill: 'infp', html: `
+<p>Portuguese is almost the only language where the <b>infinitive gets personal endings</b>. It's a shortcut that often lets you skip the conjuntivo.</p>
+<h4>How to build it</h4>
+<p>Infinitive + <b>–, -es, –, -mos, -em</b>. No irregulars!</p>
+<table><tr><th></th><th>trabalhar</th><th>ir</th><th>sair</th></tr>
+<tr><td>eu</td><td>trabalhar</td><td>ir</td><td>sair</td></tr>
+<tr><td>tu</td><td>trabalhar<b>es</b></td><td>ir<b>es</b></td><td>saír<b>es</b></td></tr>
+<tr><td>ele / ela / você</td><td>trabalhar</td><td>ir</td><td>sair</td></tr>
+<tr><td>nós</td><td>trabalhar<b>mos</b></td><td>ir<b>mos</b></td><td>sair<b>mos</b></td></tr>
+<tr><td>eles / elas / vocês</td><td>trabalhar<b>em</b></td><td>ir<b>em</b></td><td>saír<b>em</b></td></tr></table>
+<p>For regular verbs it looks exactly like the conjuntivo futuro. For irregulars it doesn't: <b>para tu fazeres</b> (infinitivo pessoal) vs <b>quando tu fizeres</b> (conjuntivo futuro).</p>
+<h4>When to use it</h4>
+<ul><li>After <b>prepositions</b>, when the subject is someone specific: <b>para, sem, até, antes de, depois de, apesar de, ao, por</b>.
+<br>Trouxe isto <b>para tu veres</b>. · <b>Antes de saíres</b>, fecha a janela. · <b>Depois de jantarmos</b>, vamos sair. · <b>Apesar de estarem</b> cansados, foram. · Obrigado <b>por virem</b>!</li>
+<li>After <b>impersonal expressions</b>: <b>é importante, é necessário, é melhor, é possível, é bom</b>.
+<br><b>É importante estudares</b> todos os dias. · <b>É melhor irmos</b> já. · <b>É possível eles chegarem</b> tarde.</li></ul>
+<h4>Infinitivo pessoal or conjuntivo?</h4>
+<p>Often both work, and they mean the same. The rule of thumb: <b>no "que" → infinitivo pessoal; with "que" → conjuntivo.</b></p>
+<table><tr><th>Infinitivo pessoal</th><th>Conjuntivo</th></tr>
+<tr><td>para tu <b>veres</b></td><td>para que tu <b>vejas</b></td></tr>
+<tr><td>antes de tu <b>saíres</b></td><td>antes que tu <b>saias</b></td></tr>
+<tr><td>é importante <b>estudares</b></td><td>é importante que <b>estudes</b></td></tr>
+<tr><td>apesar de <b>estarem</b> cansados</td><td>embora <b>estejam</b> cansados</td></tr></table>
+<p class="tip">The eu and ele forms look like the plain infinitive, so add the pronoun when it isn't clear: <b>para eu ir</b>, <b>antes de ele chegar</b>. And note: "antes de ele" (not "dele"), because "ele" is the subject of the verb.</p>` },
+
+  { id: 'haverde', title: 'Haver de + infinitivo: "I will, someday"', lvl: 'B1', drill: 'hav', html: `
+<p>A very Portuguese way to talk about the future with <b>feeling</b>: determination, a someday wish, or confidence.</p>
+<h4>Forms</h4>
+<p><b>hei de · hás de · há de · havemos de · hão de</b> + infinitive. (Older spelling: hei-de, hás-de… You'll still see it in Portugal.)</p>
+<h4>What it means</h4>
+<ul><li><b>Determination or a someday dream</b>: Um dia <b>hei de ir</b> ao Japão. · <b>Hei de aprender</b> a tocar guitarra.</li>
+<li><b>Confidence about someone else</b>: Experimenta, <b>hás de gostar</b>. (You'll like it, I'm sure.) · Isso <b>há de passar</b>.</li>
+<li><b>"Supposed to" in questions</b>: O que <b>hei de fazer</b>? (What am I supposed to do?) · Como <b>havia de saber</b>? (How was I supposed to know?)</li></ul>
+<h4>Hei de vs vou</h4>
+<table><tr><th>Vou + infinitivo</th><th>Hei de + infinitivo</th></tr>
+<tr><td>A plan. You expect it to happen.</td><td>A resolution or dream. You're sure in your heart, even with no plan.</td></tr>
+<tr><td><b>Vou</b> ao Porto no sábado.</td><td>Um dia <b>hei de ganhar</b> o Euromilhões! (said with a smile)</td></tr></table>
+<p class="tip">Easy win in class: drop one "hei de" into any talk about the future. "Um dia hei de…" sounds very natural.</p>` },
+
+  { id: 'apresentacao', title: 'Presenting with the conjuntivo: a phrase bank', lvl: 'B1', drill: 'subj', html: `
+<p>For a 5–10 minute talk that has to show off the conjuntivo, aim for <b>one conjuntivo per slide</b>. Plan where each one goes, rather than hoping it happens.</p>
+<h4>Opening</h4>
+<ul><li>Bom dia a todos. <b>Espero que estejam</b> bem.</li>
+<li>Hoje vou falar sobre… <b>Espero que achem</b> interessante.</li>
+<li><b>Talvez</b> alguns de vocês já <b>conheçam</b>…</li>
+<li><b>Quer queiramos quer não</b>, este é um tema que nos afeta a todos.</li></ul>
+<h4>Giving opinions</h4>
+<ul><li><b>É importante que</b> as pessoas <b>saibam</b>… · <b>É fundamental que</b>… · <b>É pena que</b>…</li>
+<li><b>Não acho que seja</b>… · <b>Duvido que</b>… · <b>Não acredito que</b>… <i>(but: Acho que <b>é</b>…, Sei que <b>é</b>…)</i></li>
+<li><b>Embora seja</b> difícil, vale a pena. · <b>Por muito que custe</b>, …</li>
+<li><b>Que eu saiba</b>, … (as far as I know) · <b>Seja como for</b>, … (anyway)</li></ul>
+<h4>Imagining and recommending</h4>
+<ul><li><b>Se eu pudesse</b> mudar uma coisa, <b>mudaria</b>… · <b>Se todos fizéssemos</b> isto, …</li>
+<li><b>Recomendo que experimentem</b>… · <b>Sugiro que visitem</b>…</li>
+<li><b>Quando forem</b> a…, não deixem de… · <b>Quem quiser</b> saber mais, …</li></ul>
+<h4>Closing</h4>
+<ul><li><b>Caso tenham</b> perguntas, <b>estejam</b> à vontade. · <b>Se tiverem</b> perguntas, digam!</li>
+<li><b>Espero que tenham gostado</b>. Obrigado <b>por me ouvirem</b>!</li></ul>
+<h4>Quick check before you present</h4>
+<table><tr><th>Trigger</th><th>Takes</th></tr>
+<tr><td>espero que, é importante que, talvez, embora, caso, para que, não acho que, duvido que</td><td>conjuntivo presente</td></tr>
+<tr><td>se (hypothetical), como se, se eu fosse</td><td>conjuntivo imperfeito (+ condicional)</td></tr>
+<tr><td>quando, se, assim que, quem (about the future)</td><td>conjuntivo futuro</td></tr>
+<tr><td>acho que, sei que, tenho a certeza que, é verdade que</td><td>indicativo, <b>not</b> conjuntivo</td></tr></table>
+<p class="tip">Rehearse out loud, slide by slide, and record yourself on your phone. Ask your partner to listen once and point out one mistake and one thing that sounded great. There's a partner card for this.</p>` },
 
   { id: 'falsefriends', title: 'Cognates & false friends', lvl: 'A1', html: `
 <h4>Free vocabulary: English → Portuguese patterns</h4>

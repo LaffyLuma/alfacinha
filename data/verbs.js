@@ -184,5 +184,8 @@ var VERBS = [
   { v: 'desistir', en: 'to give up', set: 'reg' },
   { v: 'cumprir', en: 'to fulfil / to keep (a promise)', set: 'reg' },
   { v: 'imprimir', en: 'to print', set: 'reg' },
+  { v: 'brincar', en: 'to play (children) / to joke', set: 'reg' },
+  { v: 'faltar', en: 'to be missing / to miss (class, work)', set: 'reg' },
+  { v: 'telefonar', en: 'to phone (telefonar a alguém)', set: 'reg' },
 ];
 if (typeof module !== 'undefined') module.exports = VERBS;

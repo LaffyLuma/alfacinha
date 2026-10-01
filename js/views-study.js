@@ -272,7 +272,11 @@
     }
     return out;
   }
-  function drillCorrectOpt(d) { const set = DRILL_SETS[d.set]; if (set.by === 't') return d.t; if (set.by === 'v') return d.v; return d.t.startsWith('c') ? 'conj' : 'ind'; }
+  function drillCorrectOpt(d) { const set = DRILL_SETS[d.set]; if (set.by === 't') return d.t; if (set.by === 'v') return d.v; if (set.by === 'pos') return d.pos; return ['cpres', 'cimp', 'cfut'].includes(d.t) ? 'conj' : 'ind'; }
+  // Drills with a literal answer (d.a, e.g. pronoun placement) vs a form from the conjugation engine.
+  const drillAns = d => d.a ? [].concat(d.a)[0] : P.VERB[d.v].f[d.t][d.p];
+  // In EP speech the imperfeito often stands in for the condicional (gostava, comprava), so accept both.
+  const drillAccepted = d => d.a ? [].concat(d.a) : d.t === 'cond' ? [drillAns(d), P.VERB[d.v].f.pimp[d.p]] : [drillAns(d)];
   V.drills = function (el) {
     const st = S().settings;
     if (!DS) {
@@ -280,28 +284,30 @@
         <div class="card"><h3>Mix</h3><div class="stack">${Object.entries(DRILL_SETS).map(([k, s]) => {
           const items = DRILLS.filter(d => d.set === k); const seen = items.filter(d => S().drills[drillKey(d)]); const acc = seen.length ? Math.round(seen.reduce((a, d) => a + S().drills[drillKey(d)].ok / S().drills[drillKey(d)].n, 0) / seen.length * 100) : null;
           return `<label class="row" style="flex-wrap:nowrap;gap:12px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-act="drill-set" data-k="${k}" ${st.drillSets.includes(k) ? 'checked' : ''} style="width:20px;height:20px;margin-top:3px">
-            <span><b>${esc(s.name)}</b> ${k === 'subj' ? '<span class="badge acc">B1</span>' : ''}<br><span class="small muted">${esc(s.desc)} · ${items.length} sentences${acc != null ? ` · ${acc}% so far` : ''}</span></span></label>`;
+            <span><b>${esc(s.name)}</b> ${s.b1 ? '<span class="badge acc">B1</span>' : ''}<br><span class="small muted">${esc(s.desc)} · ${items.length} sentences${acc != null ? ` · ${acc}% so far` : ''}</span></span></label>`;
         }).join('')}</div>
         <button class="btn primary block" style="margin-top:16px" data-act="drill-start">Start (${st.drillLen})</button></div>`;
       return;
     }
     if (DS.i >= DS.items.length) return drillSummary(el);
-    const d = DS.items[DS.i]; const set = DRILL_SETS[d.set]; const ans = P.VERB[d.v].f[d.t][d.p];
+    const d = DS.items[DS.i]; const set = DRILL_SETS[d.set]; const ans = drillAns(d);
     const correct = drillCorrectOpt(d);
-    const sentence = esc(d.s).replace(/___( \(([^)]+)\))?/, (m, g1, g2) => `<span class="blank">&nbsp;</span> <span class="muted small">(${set.by === 'v' ? 'ser / estar' : esc(d.v)}${g2 ? ', ' + g2 : ''})</span>`);
+    const cue = d.a ? esc(d.cue) : set.by === 'v' ? 'ser / estar' : esc(d.v);
+    const sentence = esc(d.s).replace(/___( \(([^)]+)\))?/, (m, g1, g2) => `<span class="blank">&nbsp;</span> <span class="muted small">(${cue}${g2 ? ', ' + g2 : ''})</span>`);
     const filled = d.s.replace(/___( \([^)]+\))?/, ans);
     let step = '';
     if (DS.phase === 'choose') step = `<div class="optbtns">${set.opts.map(([k, l]) => `<button class="btn" data-act="drill-opt" data-k="${k}">${esc(l)}</button>`).join('')}</div>`;
     else {
       const optRow = `<div class="optbtns">${set.opts.map(([k, l]) => `<button class="btn ${k === correct ? 'right' : k === DS.chosen ? 'wrong' : ''}" disabled>${esc(l)}</button>`).join('')}</div>`;
-      const tenseInfo = `${esc(P.personLabel(d.t, d.p))} · ${esc(d.v)} · ${esc(Conj.TENSE[d.t].pt)}`;
+      const tenseInfo = d.a ? `${esc(d.cue)} → verb + pronoun` : `${esc(P.personLabel(d.t, d.p))} · ${esc(d.v)} · ${esc(Conj.TENSE[d.t].pt)}`;
       if (DS.phase === 'type') step = `${optRow}<div class="small muted" style="margin-top:12px">${DS.chosen === correct ? 'Yes!' : 'Not this time.'} Now type it: <b>${tenseInfo}</b></div>
         <input class="answer" id="ans" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" autocorrect="off" style="margin-top:8px">${P.accentBar('ans')}
         <button class="btn primary block" style="margin-top:12px" data-act="drill-check">Check</button>`;
       else {
         const r = DS.result; const full = filled;
+        const alt = !d.a && d.t === 'cond' ? `<div class="small muted" style="margin-top:6px">In speech the imperfeito <b>${esc(P.VERB[d.v].f.pimp[d.p])}</b> works here too.</div>` : '';
         step = `${optRow}<input class="answer ${r.ok ? 'ok' : 'bad'}" value="${esc(DS.typed)}" readonly style="margin-top:12px">
-          <div class="answer-block">${r.ok && !r.accent ? '<div class="note-good">Certo!</div>' : r.ok ? `<div class="note-warn">Accent: <b>${esc(ans)}</b></div>` : `<div class="note-bad">${esc(ans)}</div>`}
+          <div class="answer-block">${r.ok && !r.accent ? '<div class="note-good">Certo!</div>' : r.ok ? `<div class="note-warn">Accent: <b>${esc(ans)}</b></div>` : `<div class="note-bad">${esc(ans)}</div>`}${alt}
           <div class="sentence" style="margin-top:12px">${esc(full).replace(esc(ans), `<mark>${esc(ans)}</mark>`)}</div>
           <div class="en small">${esc(d.en)}</div><div class="tip" style="margin-top:12px;text-align:left">${esc(d.why)}</div>
           <button class="btn primary block" style="margin-top:14px" data-act="drill-next">Continue <span class="kbd">Enter</span></button></div>`;
@@ -330,15 +336,14 @@
   P.startDrill = (setKey) => { S().settings.drillSets = [setKey]; Store.change({ silent: true }); DS = { items: drillPick(S().settings.drillLen), i: 0, phase: 'choose', ok: 0, done: 0, choiceOk: 0 }; location.hash = '#/drills'; P.render(); };
   act['drill-opt'] = (b) => { DS.chosen = b.dataset.k; DS.phase = 'type'; P.render(); };
   act['drill-check'] = () => {
-    const d = DS.items[DS.i]; const ans = P.VERB[d.v].f[d.t][d.p]; const v = document.getElementById('ans').value;
+    const d = DS.items[DS.i]; const ans = drillAns(d); const v = document.getElementById('ans').value;
     if (!v.trim()) return;
-    const r = P.checkAnswer(v, ans); DS.result = r; DS.typed = v; DS.phase = 'done'; DS.done++;
+    const r = P.checkAnswer(v, drillAccepted(d)); DS.result = r; DS.typed = v; DS.phase = 'done'; DS.done++;
     const choiceOk = DS.chosen === drillCorrectOpt(d); if (choiceOk) DS.choiceOk++;
     const full = choiceOk && r.ok && !r.accent; if (full) DS.ok++;
     const k = drillKey(d); const x = S().drills[k] || { n: 0, ok: 0 }; x.n++; if (full) x.ok++; x.last = Date.now(); S().drills[k] = x;
     P.bump('drill'); if (full) P.bump('drillOk');
-    P.recordConj(d.v, d.t, r.ok && !r.accent, 5000);
-    if (!r.ok) P.addFormCard(d.v, d.t, d.p);
+    if (!d.a) { P.recordConj(d.v, d.t, r.ok && !r.accent, 5000); if (!r.ok) P.addFormCard(d.v, d.t, d.p); }
     if (S().settings.autoplay) TTS.speak(d.s.replace(/___( \([^)]+\))?/, ans));
     Store.change({ silent: true }); P.render();
   };

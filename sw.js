@@ -1,5 +1,5 @@
 /* Offline support. Network-first so updates arrive when online; cache fallback when offline. */
-const CACHE = 'pois-v4';
+const CACHE = 'pois-v5';
 const FILES = ['./', './index.html', './manifest.webmanifest', './css/app.css',
   './data/verbs.js', './data/vocab1.js', './data/vocab2.js', './data/chunks.js', './data/drills.js', './data/grammar.js', './data/partner.js',
   './js/conj.js', './js/fsrs.js', './js/store.js', './js/core.js', './js/views-study.js', './js/views-other.js', './js/main.js', './js/drive.js', './config.js',
