@@ -82,12 +82,32 @@ When you get a new version, upload the changed files to the same GitHub repo. Ke
 
 | Section | What it does |
 |---|---|
-| **Hoje** | Daily plan: reviews, a verb sprint, a context drill, and one speaking/writing prompt (20–30 min) |
+| **Hoje** | Daily plan: reviews, a verb sprint, a context drill, transformations, a dialogue, and one speaking/writing prompt |
+| **Falar → Transformar** | Hear a sentence, then say it changed (another person, another tense, a question, negative, pronoun, polite, passive, reported). Reveal, hear it, grade yourself. 72 sentences, 299 changes. No typing |
+| **Falar → Diálogos** | 24 minus-one dialogues in two voices: listen, then play Ryan's part (or the other person's) out loud. Flag a line to add it to your reviews |
+| **Falar → Rádio** | Hands-free drill for walks and rides: the app asks, waits, answers, moves on. Verbs, transformations, dialogue lines and vocab |
 | **Rever** | FSRS spaced repetition: 439 words in EP sentences, 80 expressions, plus everything you capture |
 | **Verbos** | Timed typing sprints across 146 verbs × 10 tenses. Misses become review cards. Also has full verb tables |
 | **Contexto** | Choose the tense (perfeito/imperfeito, simples/composto, ser/estar, indicativo/conjuntivo) and then type the form |
 | **Escrever** | Daily prompt: write, hear it read back, copy it to get corrections |
-| **A dois** | Partner mode: a guide for her, 18 conversation games, a Portuguese-only timer, and a notebook that feeds your reviews |
+| **A dois** (under Mais) | Partner mode: a guide for her, 18 conversation games, a Portuguese-only timer, and a notebook that feeds your reviews |
 | **Gramática** | 14 short notes written for English speakers, each linked to a drill |
 | **Capture** | Add words, corrections and phrases from class. They come first among your new cards |
 | **Progresso** | Streak, recall rate, a verb-mastery heatmap and your weakest forms |
+
+## Speaking drills: manual checks (Oct 2026)
+
+Automated: `node tests/content.test.js` (content rules, Brazilian-marker guard, coverage) and `node tests/conj.test.js`.
+
+Manual acceptance list:
+1. PC Edge: a Transformations session of 12 completes with the keyboard only (Space, 1/2/3, r, h); the sentence is spoken; the answer is never visible before reveal; a Missed item comes back within the session; Progress still renders.
+2. Phone Brave: the same session with thumbs only; buttons are at least 48 px tall; nothing needs typing.
+3. Dialogue pass 1 plays both voices in order; pass 2 hides Ryan's lines until reveal; Flag creates a note visible in Capture.
+4. Radio: a 10-minute session plays through with the screen dimmed; Pause/Again/Skip/Flag work; flagged items come first in the next Transformations session; the day counts toward the streak.
+5. Leaving any of the three pages stops the audio.
+6. Old saves load without errors; export/import still works; Drive sync merges the new stats.
+7. `sw.js` cache bumped; after a deploy the phone picks up the new version on the second open.
+
+### Radio mode test notes
+- Edge on Windows (tested 21 Oct 2026 in a Chromium browser pane on Windows, with no Portuguese voice installed there, so an English voice stood in): prompts, gaps and answers play in order; Pause/Again/Skip/Flag work; the session ends at the set length and logs the minutes; leaving the page stops the audio.
+- Brave on Android: **not tested yet.** Android may pause the browser's speech when the screen turns off. Radio mode asks for a screen wake lock and shows a dark "pocket screen", so keep the phone unlocked in a pocket or on a handlebar mount. Earbud play/pause/next/previous may or may not work. Write down here what happens on the phone.

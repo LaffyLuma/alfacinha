@@ -3,20 +3,22 @@
 (function (root) {
   const PERSONS = ['eu', 'tu', 'ele/ela/você', 'nós', 'eles/elas/vocês'];
   const TENSES = [
-    { k: 'pres', pt: 'Presente', en: 'Present', lvl: 'A1' },
-    { k: 'pps', pt: 'Pretérito perfeito', en: 'Simple past (completed)', lvl: 'A2' },
-    { k: 'pimp', pt: 'Pretérito imperfeito', en: 'Imperfect (was -ing / used to)', lvl: 'A2' },
-    { k: 'ppc', pt: 'Pretérito perfeito composto', en: 'Have been -ing lately (tenho + particípio)', lvl: 'A2' },
-    { k: 'imp', pt: 'Imperativo', en: 'Commands (tu / você / vocês)', lvl: 'A2' },
-    { k: 'fut', pt: 'Futuro', en: 'Future (will)', lvl: 'B1' },
-    { k: 'cond', pt: 'Condicional', en: 'Conditional (would)', lvl: 'B1' },
-    { k: 'cpres', pt: 'Conjuntivo presente', en: 'Present subjunctive', lvl: 'B1' },
-    { k: 'cimp', pt: 'Conjuntivo imperfeito', en: 'Past subjunctive', lvl: 'B1' },
-    { k: 'cfut', pt: 'Conjuntivo futuro', en: 'Future subjunctive (quando/se…)', lvl: 'B1' },
-    { k: 'infp', pt: 'Infinitivo pessoal', en: 'Personal infinitive (para tu veres, antes de saíres)', lvl: 'B1' },
-    { k: 'hav', pt: 'Haver de + infinitivo', en: 'Going to, with conviction (hei de ir)', lvl: 'B1' },
+    { k: 'pres', pt: 'Presente', en: 'Present', lvl: 'A1', pat: 'now' },
+    { k: 'pps', pt: 'Pretérito perfeito', en: 'Simple past (completed)', lvl: 'A2', pat: 'did' },
+    { k: 'pimp', pt: 'Pretérito imperfeito', en: 'Imperfect (was -ing / used to)', lvl: 'A2', pat: 'was doing / used to' },
+    { k: 'ppc', pt: 'Pretérito perfeito composto', en: 'Have been -ing lately (tenho + particípio)', lvl: 'A2', pat: 'have been doing lately' },
+    { k: 'imp', pt: 'Imperativo', en: 'Commands (tu / você / vocês)', lvl: 'A2', pat: 'command' },
+    { k: 'fut', pt: 'Futuro', en: 'Future (will)', lvl: 'B1', pat: 'will' },
+    { k: 'cond', pt: 'Condicional', en: 'Conditional (would)', lvl: 'B1', pat: 'would' },
+    { k: 'cpres', pt: 'Conjuntivo presente', en: 'Present subjunctive', lvl: 'B1', pat: '"that I…" (espero que…)' },
+    { k: 'cimp', pt: 'Conjuntivo imperfeito', en: 'Past subjunctive', lvl: 'B1', pat: '"if I were / if I did"' },
+    { k: 'cfut', pt: 'Conjuntivo futuro', en: 'Future subjunctive (quando/se…)', lvl: 'B1', pat: '"when I (will) have…"' },
+    { k: 'infp', pt: 'Infinitivo pessoal', en: 'Personal infinitive (para tu veres, antes de saíres)', lvl: 'B1', pat: '"for me to…"' },
+    { k: 'hav', pt: 'Haver de + infinitivo', en: 'Going to, with conviction (hei de ir)', lvl: 'B1', pat: '"I\'ll make sure I…" (hei de)' },
   ];
   const TENSE = Object.fromEntries(TENSES.map(t => [t.k, t]));
+  // Plain-English pattern label for a tense key; the Portuguese term stays in TENSE[k].pt
+  const label = k => (TENSE[k] && TENSE[k].pat) || k;
 
   const END = {
     ar: { pres: ['o', 'as', 'a', 'amos', 'am'], pps: ['ei', 'aste', 'ou', 'ámos', 'aram'], pimp: ['ava', 'avas', 'ava', 'ávamos', 'avam'], cpres: ['e', 'es', 'e', 'emos', 'em'] },
@@ -139,7 +141,7 @@
     'deem': ['dêem'], 'veem': ['vêem'], 'leem': ['lêem'], 'creem': ['crêem'], 'ouço': ['oiço'], 'ouça': ['oiça'], 'ouças': ['oiças'], 'ouçamos': ['oiçamos'], 'ouçam': ['oiçam'],
   };
 
-  const api = { PERSONS, TENSES, TENSE, conjugate, ALT, accentLastVowel };
+  const api = { PERSONS, TENSES, TENSE, label, conjugate, ALT, accentLastVowel };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Conj = api;
 })(this);

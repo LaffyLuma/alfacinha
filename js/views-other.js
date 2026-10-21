@@ -30,12 +30,14 @@
       { done: reviewsDone || (due + fresh === 0 && (d.rev || 0) > 0), t: 'Reviews', d: due + fresh ? `${due} due · ${fresh} new` : ((d.rev || 0) ? `${d.rev} done today` : 'nothing due'), href: '#/review', go: 'rv-start', btn: due + fresh ? 'Start' : 'Open' },
       { done: (d.sprints || 0) > 0, t: 'Verb sprint', d: `${s.settings.sprintLen} quick forms · ${s.settings.tenses.map(k => Conj.TENSE[k].pt.replace('Pretérito ', '')).join(', ')}`, href: '#/gym', go: 'gym-start', btn: 'Start' },
       { done: (d.drillSessions || 0) > 0, t: 'Context drill', d: 'Pick the right tense in real sentences', href: '#/drills', go: 'drill-start', btn: 'Start' },
+      { done: (d.trans || 0) > 0, t: 'Transformations', d: `Hear it, then say it changed · today: <b>${esc(Conj.label(P.focusTense()))}</b>`, href: '#/transform', go: 'tr-start', btn: 'Start' },
+      { done: (d.dialog || 0) > 0, t: 'Dialogue', d: 'Minus one: play your part out loud', href: '#/dialogues', btn: 'Open' },
       { done: (d.write || 0) > 0, t: 'Say or write it', d: esc(prompt.pt), href: '#/write', btn: 'Open' },
     ];
     const doneCount = items.filter(i => i.done).length;
     el.innerHTML = `
       <div class="hero"><div><div class="muted small">${new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</div><h1>${greet}, ${esc(s.settings.name || '')}!</h1></div>
-        <div class="row"><span class="badge acc">🔥 ${P.streak()} day streak</span><span class="badge">${doneCount}/4 today</span></div></div>
+        <div class="row"><span class="badge acc">🔥 ${P.streak()} day streak</span><span class="badge">${doneCount}/${items.length} today</span></div></div>
       ${first ? `<div class="card" style="border-color:var(--accent)"><h2>Bem-vindo 👋</h2>
         <p>Here's how to use this: <b>20–30 minutes a day</b>, top to bottom. Reviews first (spaced repetition), then a verb sprint, a context drill, and one thing you say or write. Add what you learn in class under <b>Capture</b>, and give your partner the <b>Partner</b> tab.</p>
         <p class="small muted">Everything is saved on this device. ${Store.fsSupported() ? 'On this computer you can also link a save file in your Portuguese folder (Settings → Save file).' : 'Use Settings → Backup to export a save file now and then.'}</p></div>` : ''}
@@ -43,6 +45,7 @@
       <div class="card"><h2>Hoje</h2><ul class="plan">${items.map(i => `<li class="${i.done ? 'done' : ''}">
         <span class="check">${ICON.check}</span><div class="grow"><div class="t">${i.t}</div><div class="d">${i.d}</div></div>
         <a class="btn sm ${i.done ? '' : 'primary'}" href="${i.href}" ${i.go ? `data-go="${i.go}"` : ''}>${i.done ? 'Again' : i.btn}</a></li>`).join('')}</ul></div>
+      <a class="card radio-cta" href="#/radio">${ICON.radio}<span>Going out? <b>Radio mode</b> turns a walk or ride into drill time.</span></a>
       <div class="grid two">
         <div class="card"><h3>Had a class today?</h3><p class="small muted">Capture new words, corrections and phrases while they're fresh. They jump to the front of your new cards.</p><a class="btn" href="#/capture">${ICON.capture} Capture</a></div>
         <div class="card"><h3>Português a dois</h3><p class="small muted">A 15-minute Portuguese-only game with your partner. Cards, a timer and a notebook for her.</p><a class="btn" href="#/partner">${ICON.partner} Partner mode</a></div>
@@ -310,7 +313,10 @@
         <details style="margin-top:12px"><summary class="small">How to get a European Portuguese voice</summary><div class="small prose" style="margin-top:8px"><ul>
           <li><b>Windows:</b> Settings → Time & language → Language & region → Add a language → <i>Português (Portugal)</i> and tick <i>Text-to-speech</i>. Restart the browser. In <b>Edge</b>, the online "Raquel/Duarte (Natural)" voices sound best.</li>
           <li><b>Android:</b> Settings → search <i>Text-to-speech</i> → Google engine → Install voice data → <i>Português (Portugal)</i>.</li></ul></div></details></div>
-      <div class="card"><h2>About</h2><p class="small muted">Alfacinha Incubator uses FSRS spaced repetition (the algorithm in modern Anki), retrieval practice, interleaving and pushed output. Content: ${VOCAB.length} words in European Portuguese sentences, ${CHUNKS.length} expressions, ${VERBS.length} verbs × ${Conj.TENSES.length} tenses, ${DRILLS.length} context drills, ${GRAMMAR.length} grammar notes, ${PARTNER_CARDS.length} partner cards.</p>
+      <div class="card"><h2>Rádio</h2>
+        <p class="small muted">Radio mode speaks a prompt, waits, then speaks the answer, so you can drill with earbuds on a walk or an easy ride.</p>
+        <p class="small"><b>Known limitation:</b> phones (Android especially) can pause the browser's speech when the screen turns off or the app goes to the background. Radio mode keeps the screen on with a dark "pocket screen" while it plays. Keep the phone unlocked in a pocket or on a handlebar mount; if the speech stops, unlock and tap Play. Earbud play/pause/next buttons may or may not work, depending on the phone and browser.</p></div>
+      <div class="card"><h2>About</h2><p class="small muted">Alfacinha Incubator uses FSRS spaced repetition (the algorithm in modern Anki), retrieval practice, interleaving and pushed output. Content: ${VOCAB.length} words in European Portuguese sentences, ${CHUNKS.length} expressions, ${VERBS.length} verbs × ${Conj.TENSES.length} tenses, ${DRILLS.length} context drills, ${TRANSFORM.reduce((a, it) => a + it.tr.length, 0)} transformations, ${DIALOGUES.length} dialogues, ${GRAMMAR.length} grammar notes, ${PARTNER_CARDS.length} partner cards.</p>
         <button class="btn ghost danger sm" data-act="reset">Reset all progress…</button></div>`;
     el.querySelectorAll('[data-set]').forEach(inp => inp.addEventListener('change', () => {
       const k = inp.dataset.set; let v = inp.type === 'checkbox' ? inp.checked : inp.value;
@@ -366,7 +372,7 @@
 
   // ======================= MORE (mobile menu) =======================
   V.more = function (el) {
-    const items = [['drills', 'Context drills', 'Perfeito vs imperfeito, ser/estar, conjuntivo'], ['write', 'Escrever', 'Daily speaking & writing prompt'], ['grammar', 'Gramática', 'Short notes + linked drills'], ['capture', 'Capture', 'Add words from class or life'], ['tables', 'Verb tables', 'Every verb, every tense'], ['progress', 'Progresso', 'Stats, verb mastery'], ['settings', 'Definições', 'Save file, backup, voice']];
+    const items = [['drills', 'Context drills', 'Perfeito vs imperfeito, ser/estar, conjuntivo'], ['partner', 'Português a dois', 'Conversation cards and timer for you and your partner'], ['write', 'Escrever', 'Daily speaking & writing prompt'], ['grammar', 'Gramática', 'Short notes + linked drills'], ['capture', 'Capture', 'Add words from class or life'], ['tables', 'Verb tables', 'Every verb, every tense'], ['progress', 'Progresso', 'Stats, verb mastery'], ['settings', 'Definições', 'Save file, backup, voice']];
     el.innerHTML = `<h1>Mais</h1><div class="card menu">${items.map(([k, t, d]) => `<a href="#/${k}">${ICON[k === 'drills' ? 'drills' : k === 'tables' ? 'table' : k]}<span>${t}<small>${d}</small></span></a>`).join('')}</div>`;
   };
 })(Pois);

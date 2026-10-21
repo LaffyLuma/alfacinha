@@ -1,5 +1,5 @@
-const C = require('../app/js/conj.js');
-const VERBS = require('../app/data/verbs.js');
+const C = require(require('path').join(__dirname, '..', 'js', 'conj.js'));
+const VERBS = require(require('path').join(__dirname, '..', 'data', 'verbs.js'));
 const by = Object.fromEntries(VERBS.map(v => [v.v, C.conjugate(v)]));
 // Reference forms (EP standard)
 const REF = {

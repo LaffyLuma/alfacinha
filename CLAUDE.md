@@ -26,20 +26,26 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `data/chunks.js` | 80 expressions: `[chunk, meaning, note, example with {cloze}, example_en]` |
 | `data/drills.js` | Context drills: past / ppc / serestar / subj / hipot / infp / pron. The answer is generated from `v,t,p`, except `pron` drills, which carry a literal answer `a` plus `cue` and `pos`. `cond` answers also accept the imperfeito |
 | `data/grammar.js`, `data/partner.js` | Grammar notes (HTML); partner guide, partner cards, writing prompts |
+| `data/transform.js` | 72 transformation items (`TRANSFORM`): `base` + `tr[]` of `{kind, ask, a[], mark[], why, hint?, v?, t?, p?}`. Kinds: person/tense/question/negate/pronoun/polite/passive/reported. Checked by `tests/content.test.js` |
+| `data/dialogues.js` | 24 minus-one dialogues (`DIALOGUES`): Ryan is always role B; B lines carry `hint` + `mark`; `formal` dialogues use o senhor / você |
 | `js/fsrs.js` | FSRS-4.5 scheduler with default weights |
 | `js/store.js` | State in localStorage (`pois.state.v1`), optional linked save file (File System Access API), export/import, `merge()` (latest review wins per card, note tombstones, reset-aware), `fingerprint()` |
 | `js/drive.js` | Google Drive sync: GIS token client, scope `drive.appdata`, one file `pois-progress.json` in appDataFolder; sync = pull → merge → push, 4 s after changes. Tokens last about 1 h; after that the user taps "Sync" because browsers block popups that aren't started by a tap |
+| `js/speak.js` | Speech sequencing on `P.TTS`: `say()` → Promise, `stop()`, `pause()`, `token()`, `voices2()`, `sayOrRead()`; `P.sayCard()` (shared speak → reveal → grade card); `P.markHTML`; `P.flag` / `P.takeFlagged` (radio flags); `P.leave[route]` cleanup hooks (the router calls `TTS.stop()` on every route change) |
 | `js/core.js` | Content indexes, card ids (`v:`/`c:`/`n:`/`f:` + `:rec`/`:prod`/`:fix`/`:form`), answer checking (accent-lenient), TTS (prefers pt-PT) |
 | `js/views-study.js` | Review session, conjugation gym, context drills, verb tables |
 | `js/views-other.js` | Today, partner mode, write, grammar, capture, progress, settings (including the Drive card) |
+| `js/views-speak.js` | Falar hub, Transformations (`#/transform`), Dialogues (`#/dialogues`), Radio (`#/radio`), `P.focusTense()` |
 | `js/main.js` | Hash router, nav, global `data-act` click delegation, boot |
 | `sw.js` | Network-first offline cache. **Bump `CACHE`** whenever files change |
 | `config.js` | `window.POIS_CONFIG.googleClientId`. Not secret |
 
+State added in Oct 2026: `trans`, `dialog`, `radio` (top level) and settings `transLen`, `radioGap`, `radioLen`, `radioMix`; day counters `trans`, `transSessions`, `dialog`, `radioMin` (all count for the streak). Tenses have a plain-English `pat` label: `Conj.label(k)`.
+
 Conventions: views render HTML strings into `#view`; buttons use `data-act="name"`, which maps to `Pois.actions[name]`; keyboard handlers are in `Pois.keys[route]`. Call `Store.change()` after mutating state (pass `{silent:true}` to skip the re-render).
 
 ## Testing
-`python3 tests/e2e.py` and `python3 tests/drive_sync.py` both serve `app/` on localhost and need Playwright with Chromium. `node tests/conj.test.js` checks conjugations. The test paths assume the app is at `/home/claude/app`, so adjust `ROOT` / `-d` to wherever this folder lives.
+`python3 tests/e2e.py` and `python3 tests/drive_sync.py` both serve `app/` on localhost and need Playwright with Chromium. `node tests/conj.test.js` checks conjugations; `node tests/content.test.js` checks the transformation and dialogue content (EP rules, Brazilian-marker guard, coverage). The node tests find the app folder themselves; the Python tests assume the app is at `/home/claude/app`, so adjust `ROOT` / `-d` to wherever this folder lives.
 
 ## B1 course
 Ryan's class (Lisbon Language Café B1) is the topic guide, not something to copy: imperfeito, condicional, object pronouns, infinitivo pessoal, haver de, PPC, and the conjuntivo for his class presentations. Don't put classmates' names or the course site password from his handouts into this public repo.
@@ -47,3 +53,8 @@ Ryan's class (Lisbon Language Café B1) is the topic guide, not something to cop
 ## Ideas not built yet
 - Speaking practice: record yourself and compare against TTS. Avoid the Web Speech API recognition, because it sends audio to Google.
 - Ask the girlfriend to check the example sentences for naturalness. Claude wrote them all.
+
+## Planned work (Oct 2026)
+- `../Audit and Plan.md`: audit of the app against Ryan's learning brief and the phased plan. Read it before proposing features.
+- `../Build Spec - Speaking Drills.md`: full build spec for three features (transformation drills, minus-one dialogues, radio mode). Build from that spec exactly; don't start the other phases of the plan without being asked.
+- Ryan does not want to be asked "shall I build this?" repeatedly. When given a spec, build it; when thinking, just think.

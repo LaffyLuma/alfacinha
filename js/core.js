@@ -17,7 +17,7 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
     return items[items.length - 1];
   }
   let toastT;
-  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
+  function toast(msg, ms) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2400); }
 
   const I = (p) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
   const ICON = {
@@ -36,6 +36,9 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
     check: I('<path d="M20 6L9 17l-5-5"/>'),
     cloud: I('<path d="M18 10h-1.3A7 7 0 1 0 9 19h9a5 5 0 0 0 0-9z"/>'),
     table: I('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>'),
+    transform: I('<path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>'),
+    dialog: I('<path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/>'),
+    radio: I('<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>'),
   };
 
   // ---------- speech ----------
@@ -212,7 +215,7 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
   function mastery(v, t) { const x = S().conj[v + '|' + t]; if (!x) return null; const speed = x.ms < 3500 ? 1 : x.ms < 6000 ? 0.8 : 0.6; return Math.max(0, Math.min(1, x.ema * speed * Math.min(1, 0.4 + x.n / 10))); }
   function streak() {
     const s = S(); let n = 0; const d = new Date();
-    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0)) > 0; };
+    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0) + (r.trans || 0) + (r.dialog || 0) + (r.radioMin || 0)) > 0; };
     if (!active(todayKey(d))) d.setDate(d.getDate() - 1);
     while (active(todayKey(d))) { n++; d.setDate(d.getDate() - 1); }
     return n;

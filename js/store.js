@@ -7,11 +7,15 @@
     voice: '', rate: 0.9, autoplay: true,
     tenses: ['pres', 'pps', 'pimp'], verbSets: ['irr', 'stem', 'reg'], persons: [0, 1, 2, 3, 4], sprintLen: 20,
     drillSets: ['past', 'ppc', 'serestar'], drillLen: 10, chunkEvery: 4,
+    transLen: 12, radioGap: 4, radioLen: 15, radioMix: ['verbs', 'trans', 'dialog', 'vocab'],
   };
   function fresh() {
     return { v: 1, created: Date.now(), updated: Date.now(), settings: Object.assign({}, DEFAULT_SETTINGS),
       cards: {}, notes: {}, conj: {}, drills: {}, days: {}, journal: [], partnerLog: [], seenGuide: false,
-      deleted: { notes: {} }, resetAt: 0 };
+      deleted: { notes: {} }, resetAt: 0,
+      trans: {},      // transformation stats: 'itemId|idx' → { n, ok, slow, ema, last }
+      dialog: {},     // dialogue stats: dialogueId → { passes, last, rating }
+      radio: { flagged: [], minutes: 0, used: {} } }; // flagged: items to bring back on screen; used: flag key → time it was consumed
   }
   let state = null;
   let listeners = [], anyListeners = [];
@@ -145,6 +149,9 @@
     // Stats: keep whichever side has more data (idempotent, so merging the same file twice is harmless)
     for (const [k, x] of Object.entries(b.conj)) { const y = out.conj[k]; if (!y || (x.n || 0) > (y.n || 0)) out.conj[k] = x; }
     for (const [k, x] of Object.entries(b.drills)) { const y = out.drills[k]; if (!y || (x.n || 0) > (y.n || 0)) out.drills[k] = x; }
+    for (const [k, x] of Object.entries(b.trans)) { const y = out.trans[k]; if (!y || (x.n || 0) > (y.n || 0)) out.trans[k] = x; }
+    for (const [k, x] of Object.entries(b.dialog)) { const y = out.dialog[k]; if (!y || (x.passes || 0) > (y.passes || 0)) out.dialog[k] = x; }
+    out.radio = mergeRadio(a.radio, b.radio);
     for (const [d, x] of Object.entries(b.days)) {
       const y = out.days[d];
       if (!y) { out.days[d] = x; continue; }
@@ -159,20 +166,37 @@
     out.updated = Math.max(a.updated || 0, b.updated || 0);
     return out;
   }
+  // Flagged radio items: union by descriptor; an item consumed on either device stays consumed.
+  const radioKey = d => [d.kind, d.id, d.idx, d.i, d.v, d.t, d.p].map(x => x == null ? '' : x).join('|');
+  function mergeRadio(a, b) {
+    a = a || {}; b = b || {};
+    const used = Object.assign({}, a.used || {});
+    for (const [k, t] of Object.entries(b.used || {})) used[k] = Math.max(used[k] || 0, t);
+    const seen = new Set(), flagged = [];
+    for (const d of [...(a.flagged || []), ...(b.flagged || [])]) {
+      const k = radioKey(d);
+      if (seen.has(k) || (used[k] && used[k] >= (d.at || 0))) continue;
+      seen.add(k); flagged.push(d);
+    }
+    return { flagged, minutes: Math.max(a.minutes || 0, b.minutes || 0), used };
+  }
   function prune(x, R) {
     for (const [id, c] of Object.entries(x.cards)) if ((c.last || c.created || 0) < R) delete x.cards[id];
     for (const [id, n] of Object.entries(x.notes)) if ((n.date || 0) < R) delete x.notes[id];
     for (const [k, c] of Object.entries(x.conj)) if ((c.last || 0) < R) delete x.conj[k];
     for (const [k, c] of Object.entries(x.drills)) if ((c.last || 0) < R) delete x.drills[k];
+    for (const [k, c] of Object.entries(x.trans)) if ((c.last || 0) < R) delete x.trans[k];
+    for (const [k, c] of Object.entries(x.dialog)) if ((c.last || 0) < R) delete x.dialog[k];
+    x.radio.flagged = (x.radio.flagged || []).filter(d => (d.at || 0) >= R);
     const rk = new Date(R); const rkey = `${rk.getFullYear()}-${String(rk.getMonth() + 1).padStart(2, '0')}-${String(rk.getDate()).padStart(2, '0')}`;
     for (const k of Object.keys(x.days)) if (k < rkey) delete x.days[k];
     x.journal = x.journal.filter(j => j.date >= R); x.partnerLog = x.partnerLog.filter(j => j.date >= R);
   }
   // A compact fingerprint of the learning data, used to tell whether a merge actually changed anything.
-  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt]); }
+  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio]); }
   function validate(obj) { return obj && typeof obj === 'object' && obj.v && obj.cards && obj.settings; }
 
-  const api = { load, get, change, flush, onChange, onAnyChange, replace, fingerprint, fresh, merge, validate, exportBlob,
+  const api = { load, get, change, flush, onChange, onAnyChange, replace, fingerprint, fresh, merge, radioKey, validate, exportBlob,
     fsSupported, initFile, reconnect, linkNewFile, linkExistingFile, unlinkFile, saveFile, fileStatus: () => fileStatus, DEFAULT_SETTINGS };
   root.Store = api;
 })(this);

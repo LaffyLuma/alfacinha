@@ -126,8 +126,8 @@
 
   // ======================= CONJUGATION GYM =======================
   let GS = null;
-  function gymCandidates() {
-    const st = S().settings; const out = [];
+  function gymCandidates(o) {
+    const st = Object.assign({}, S().settings, o || {}); const out = [];
     for (const [v, { def, f }] of Object.entries(P.VERB)) {
       if (!st.verbSets.includes(def.set)) continue;
       for (const t of st.tenses) {
@@ -153,6 +153,14 @@
     const p = c.persons[Math.floor(Math.random() * c.persons.length)];
     return { v: c.v, t: c.t, p };
   }
+  // One weighted verb-form pick across all 12 tenses and all verb sets (used by radio mode).
+  P.gymPick = function (last) {
+    const cands = gymCandidates({ tenses: Conj.TENSES.map(t => t.k), verbSets: ['irr', 'stem', 'reg'] });
+    if (!cands.length) return null;
+    let c, guard = 0;
+    do { c = P.pickWeighted(cands, gymWeight); guard++; } while (last && c.v === last.v && guard < 6);
+    return { v: c.v, t: c.t, p: c.persons[Math.floor(Math.random() * c.persons.length)] };
+  };
   V.gym = function (el) {
     const st = S().settings;
     if (!GS) {
@@ -222,7 +230,7 @@
     P.bump('sprints'); Store.change({ silent: true });
     GS = null;
   }
-  function startGym(items) { GS = { items, i: 0, ok: 0, done: 0, times: [], misses: [], log: [], result: null, typed: '' }; if (!items) { GS.items = []; for (let k = 0; k < S().settings.sprintLen; k++) { const n = gymNext(); if (!n) break; GS.items.push(n); GS.last = n; } } P.render(); }
+  function startGym(items) { GS = { items, i: 0, ok: 0, done: 0, times: [], misses: [], log: [], result: null, typed: '' }; if (!items) { GS.items = P.takeFlagged(['verb'], S().settings.sprintLen).filter(d => P.VERB[d.v] && P.VERB[d.v].f[d.t] && P.VERB[d.v].f[d.t][d.p]).map(d => ({ v: d.v, t: d.t, p: d.p })); if (GS.items.length) Store.change({ silent: true }); for (let k = GS.items.length; k < S().settings.sprintLen; k++) { const n = gymNext(); if (!n) break; GS.items.push(n); GS.last = n; } } P.render(); }
   act['gym-start'] = () => startGym();
   act['gym-again'] = () => startGym();
   act['gym-focus'] = (b) => {

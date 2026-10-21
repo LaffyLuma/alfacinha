@@ -196,3 +196,42 @@ th { font-size: .8rem; color: var(--ink-2); font-weight: 700; }
 .bars div.zero { background: var(--surface-2); }
 details summary { cursor: pointer; font-weight: 650; }
 .hide-sm { } @media (max-width: 600px) { .hide-sm { display: none; } }
+
+/* speaking drills: transformations, dialogues (shared say card) */
+.grades.three { grid-template-columns: repeat(3, 1fr); }
+.study.say .btn, .study.dlg .btn { min-height: 48px; }
+.study.say .say-main { min-height: 56px; font-size: 1.08rem; margin-top: 16px; }
+.say-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+.say-row .btn { min-height: 48px; }
+.sayhint { margin-top: 12px; font-size: 1.1rem; color: var(--accent); font-weight: 600; }
+.qcard .prompt-label .term, .tiny.term { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.study.say .grades button { min-height: 60px; font-size: 1.02rem; }
+.dprev { text-align: left; font-size: .95rem; color: var(--ink-2); border-left: 3px solid var(--line); padding: 2px 0 2px 10px; margin-bottom: 14px; }
+.dprev .who, .dline .who { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); font-weight: 700; display: block; }
+.study.dlg { margin-bottom: 0; }
+.transcript { display: flex; flex-direction: column; gap: 8px; }
+.dline { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; cursor: pointer; opacity: .55; transition: opacity .15s, border-color .15s; max-width: 88%; }
+.dline.b { align-self: flex-end; background: var(--accent-soft); }
+.dline .pt { font-size: 1.05rem; } .dline .en { display: block; font-size: .86rem; color: var(--ink-2); margin-top: 2px; }
+.dline.on { opacity: 1; border-color: var(--accent); box-shadow: var(--shadow); }
+.dline.past { opacity: .7; }
+.radio-cta { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.radio-cta svg { width: 26px; height: 26px; color: var(--accent); flex: none; }
+.radio-cta:hover { border-color: var(--accent); }
+
+/* radio: dark pocket screen */
+.pocket { position: fixed; inset: 0; z-index: 40; background: #000; color: #f2f2f2; display: flex; flex-direction: column; padding: calc(14px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)); }
+.pk-top { display: flex; justify-content: space-between; align-items: center; font-size: .95rem; color: #9a9a9a; font-variant-numeric: tabular-nums; }
+.pk-stop { background: transparent; color: #bbb; border: 1px solid #444; border-radius: 10px; padding: 8px 16px; font-weight: 600; min-height: 44px; cursor: pointer; }
+.pk-main { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; gap: 12px; padding: 12px 0; min-height: 0; overflow: auto; }
+.pk-phase { font-size: .85rem; text-transform: uppercase; letter-spacing: .12em; color: #888; font-weight: 700; }
+.pk-phase.go { color: #7fd3a0; }
+.pk-prompt { font-size: clamp(1.5rem, 5.5vw, 2.4rem); font-weight: 700; line-height: 1.25; }
+.pk-sub { font-size: 1.05rem; color: #aaa; }
+.pk-ans { font-size: clamp(1.25rem, 4.5vw, 1.9rem); color: #8fc1ff; font-weight: 600; }
+.pk-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 640px; width: 100%; margin: 0 auto; }
+.pk-btns button { min-height: 92px; background: #141414; color: #fff; border: 1px solid #333; border-radius: 18px; font-size: 1.35rem; font-weight: 700; cursor: pointer; }
+.pk-btns button:active { background: #262626; }
+.say-main { min-height: 56px; font-size: 1.08rem; }
+.chip.big { min-height: 48px; padding: 8px 16px; font-size: .92rem; }
+.study.say .iconbtn, .study.dlg .iconbtn { width: 48px; height: 48px; }

@@ -3,19 +3,21 @@
   const { ICON, esc } = P;
   const NAV = [
     ['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['drills', 'Contexto', 'drills'],
+    ['transform', 'Transformar', 'transform'], ['dialogues', 'Diálogos', 'dialog'], ['radio', 'Rádio', 'radio'],
     ['write', 'Escrever', 'write'], ['partner', 'A dois', 'partner'], ['sep'], ['grammar', 'Gramática', 'grammar'], ['capture', 'Capture', 'capture'],
     ['progress', 'Progresso', 'progress'], ['settings', 'Definições', 'settings'],
   ];
-  const TABS = [['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['partner', 'A dois', 'partner'], ['more', 'Mais', 'more']];
+  const TABS = [['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['speak', 'Falar', 'dialog'], ['more', 'Mais', 'more']];
   const route = () => (location.hash.replace(/^#\/?/, '').split('?')[0] || 'today');
   P.route = route;
 
   function renderChrome(r) {
     const rr = r === 'tables' ? 'gym' : r;
+    const tr = ['transform', 'dialogues', 'radio'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
     document.getElementById('sidebar').innerHTML = `<a class="brand" href="#/today"><span class="brand-mark">A</span>Alfacinha</a>` +
       NAV.map(n => n[0] === 'sep' ? '<div class="sep"></div>' : `<a class="nav ${rr === n[0] ? 'on' : ''}" href="#/${n[0]}">${ICON[n[2]]}${n[1]}</a>`).join('');
-    const moreRoutes = ['more', 'drills', 'write', 'grammar', 'capture', 'progress', 'settings', 'tables'];
-    document.getElementById('tabbar').innerHTML = TABS.map(t => `<a href="#/${t[0]}" class="${(t[0] === 'more' ? moreRoutes.includes(r) && r !== 'tables' : rr === t[0]) ? 'on' : ''}">${ICON[t[2]]}${t[1]}</a>`).join('');
+    const moreRoutes = ['more', 'drills', 'write', 'grammar', 'capture', 'progress', 'settings', 'tables', 'partner'];
+    document.getElementById('tabbar').innerHTML = TABS.map(t => `<a href="#/${t[0]}" class="${(t[0] === 'more' ? moreRoutes.includes(r) && r !== 'tables' : tr === t[0]) ? 'on' : ''}">${ICON[t[2]]}${t[1]}</a>`).join('');
     const fs = Store.fileStatus();
     const due = P.dueIds().length;
     const D = P.Drive, dcon = D && D.connected();
@@ -26,9 +28,15 @@
       ${drivePill || (fs.needsPermission ? `<button class="btn sm" data-act="file-reconnect">Reconnect save file</button>` : `<span class="savepill ${fs.error ? 'warn' : ''}" title="${esc(fs.error || '')}"><span class="dot"></span>${fs.linked ? 'Saved to ' + esc(fs.name) : 'Saved on this device'}</span>`)}</div>`;
   }
   P.renderChrome = () => renderChrome(route());
-  let lastRoute = null;
+  let lastRoute = null, curRoute = null;
+  // Leaving a page never leaves audio running; each speaking page can also clean up its own state.
+  function leaveRoute(r) {
+    if (curRoute && curRoute !== r) { P.TTS.stop(); const f = P.leave && P.leave[curRoute]; if (f) try { f(); } catch (e) { console.warn(e); } }
+    curRoute = r;
+  }
   function render() {
     const r = route();
+    leaveRoute(r);
     const view = P.views[r] || P.views.today;
     renderChrome(r);
     const el = document.getElementById('view');
@@ -71,7 +79,7 @@
     if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('pcard')) { e.target.click(); return; }
     const k = P.keys[route()]; if (k) k(e);
   });
-  window.addEventListener('hashchange', render);
+  window.addEventListener('hashchange', () => { P.TTS.stop(); render(); });
   window.addEventListener('popstate', render);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') Store.flush(); });
   window.addEventListener('pagehide', () => Store.flush());
