@@ -21,7 +21,8 @@
       ritmo: { loop: {}, bpm: {}, last: 0 }, // loop: sentence key → best tempo (rate); bpm: tense → best BPM held
       missions: {},   // missionId → { done, phrase } (done = time completed)
       build: {},      // sentence building: itemId → { n, ok, ema, last }
-      reading: [], readCur: '' }; // reading log sessions { id, date, book, pages, mins }; the book you're on now (per device)
+      reading: [], readCur: '',
+      fun: { win: {}, pb: {}, bosses: {}, km: 0 } }; // guided session: time windows, personal bests, bosses, N2 km // reading log sessions { id, date, book, pages, mins }; the book you're on now (per device)
   }
   let state = null;
   let listeners = [], anyListeners = [];
@@ -162,6 +163,10 @@
     const rm = (p, q) => { const o = Object.assign({}, p || {}); for (const [k, v] of Object.entries(q || {})) o[k] = Math.max(o[k] || 0, v); return o; };
     out.ritmo = { loop: rm(a.ritmo.loop, b.ritmo.loop), bpm: rm(a.ritmo.bpm, b.ritmo.bpm), last: Math.max(a.ritmo.last || 0, b.ritmo.last || 0) };
     for (const [k, x] of Object.entries(b.build)) { const y = out.build[k]; if (!y || (x.n || 0) > (y.n || 0)) out.build[k] = x; }
+    const fa = a.fun || {}, fb = b.fun || {};
+    const mx = (p, q) => { const o = Object.assign({}, p || {}); for (const [k, v] of Object.entries(q || {})) o[k] = Math.max(o[k] || 0, v); return o; };
+    const bosses = Object.assign({}, fa.bosses || {}); for (const [k, x] of Object.entries(fb.bosses || {})) { const y = bosses[k]; bosses[k] = !y ? x : { tries: Math.max(y.tries || 0, x.tries || 0), beaten: y.beaten || x.beaten }; }
+    out.fun = { win: Object.assign({}, fb.win || {}, fa.win || {}), pb: mx(fa.pb, fb.pb), bosses, km: Math.max(fa.km || 0, fb.km || 0) };
     for (const [k, x] of Object.entries(b.missions)) { const y = out.missions[k]; if (!y || (x.done || 0) > (y.done || 0)) out.missions[k] = x; }
     for (const [d, x] of Object.entries(b.days)) {
       const y = out.days[d];
@@ -209,7 +214,7 @@
     x.journal = x.journal.filter(j => j.date >= R); x.reading = (x.reading || []).filter(j => j.date >= R); x.partnerLog = x.partnerLog.filter(j => j.date >= R);
   }
   // A compact fingerprint of the learning data, used to tell whether a merge actually changed anything.
-  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions, x.build, x.reading.length]); }
+  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions, x.build, x.reading.length, x.fun]); }
   function validate(obj) { return obj && typeof obj === 'object' && obj.v && obj.cards && obj.settings; }
 
   const api = { load, get, change, flush, onChange, onAnyChange, replace, fingerprint, fresh, merge, radioKey, validate, exportBlob,

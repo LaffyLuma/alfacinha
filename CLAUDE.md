@@ -48,6 +48,8 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `js/planner.js` | Hoje planner: focus per weekday (`P.todayFocus`, `P.planFocusTenses`), two guided ~30-min blocks with a session bar and hand-off via `P.stepDone(kind)` from each activity's end screen, 5-min mode |
 | `js/views-build.js` | Construir (`#/construir`): English idea + hints → say the whole sentence → model + note → 1/2/3; `P.startBuild(focus)` for the planner |
 | `js/views-read.js` | Ler e ouvir (`#/ler`): reading log (`reading[]`, `readCur`), book and music lists, lyric → card (paste a line, tap first/last word, becomes a note card) |
+| `js/session.js` | Sessão (`#/sessao`, big button on Hoje): warm-up beat-the-clock verbs → due reviews (speak-first, `P.gradeCard`) → new items (half from `CHUNKS2`) → speaking mix (verb sentences, transformations, Construir) → boss fight on a recurring slip → summary. One item model `{kind,label,front,answer,say,cue,help,grade(g,ms)}`; per-kind time windows in `S().fun.win` (Got it after the window = Slow); combos, PBs, bosses, N2 km in `S().fun`. `P.startSession('short'|'long')` |
+| `data/chunks2.js`, `data/verbsent.js` | 145 everyday phrases (`CHUNKS2`, appended to `CHUNKS`) · 161 high-frequency verbs in sentences (`VERBSENT`, `{form}` = engine form) |
 | `js/main.js` | Hash router, nav, global `data-act` click delegation, boot |
 | `sw.js` | Network-first offline cache. **Bump `CACHE`** whenever files change |
 | `config.js` | `window.POIS_CONFIG.googleClientId`. Not secret |

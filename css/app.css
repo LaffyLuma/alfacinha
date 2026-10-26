@@ -299,3 +299,27 @@ details summary { cursor: pointer; font-weight: 650; }
 .lyric { display: flex; flex-wrap: wrap; gap: 6px; }
 .lw { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 10px; min-height: 44px; font-size: 1.02rem; cursor: pointer; color: var(--ink); }
 .lw.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+/* guided session */
+.start-card { border-color: var(--accent); }
+.plan-more > summary { padding: 10px 2px; margin-bottom: 8px; color: var(--ink-2); }
+.ss-strip { display: flex; gap: 6px; max-width: 640px; margin: 0 auto 10px; flex-wrap: wrap; }
+.ss-strip span { flex: 1; text-align: center; font-size: .74rem; font-weight: 700; padding: 5px 4px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
+.ss-strip span.on { background: var(--accent); color: var(--accent-ink); }
+.ss-strip span.done { background: var(--good-soft); color: var(--good); }
+.combo { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 800; animation: pop .25s ease-out; }
+@keyframes pop { from { transform: scale(1.5); } to { transform: scale(1); } }
+.tbar { height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin: -6px 0 14px; }
+.tbar > div { height: 100%; width: 100%; transform-origin: left; background: var(--good); animation-name: drain; animation-timing-function: linear; animation-fill-mode: forwards; }
+@keyframes drain { 0% { transform: scaleX(1); background: var(--good); } 70% { background: var(--warn); } 100% { transform: scaleX(0); background: var(--bad); } }
+@media (prefers-reduced-motion: reduce) { .tbar > div, .combo { animation: none; } }
+.ss-rapid, .ss-boss { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: -6px 0 14px; padding: 8px 12px; border-radius: 12px; background: var(--surface-2); font-size: .95rem; text-align: left; }
+.ss-rapid b { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.ss-boss .hp { color: var(--bad); font-size: 1.25rem; letter-spacing: 2px; white-space: nowrap; } .ss-boss .hp .lost { color: var(--line); }
+.grades.two { grid-template-columns: 1fr 1fr; }
+.ss-start { min-height: 64px; font-size: 1.12rem; }
+.n2-road { position: relative; height: 10px; border-radius: 99px; background: var(--surface-2); margin: 10px 0 4px; }
+.n2-fill { height: 100%; border-radius: 99px; background: var(--accent); }
+.n2-dot { position: absolute; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--line); border: 1px solid var(--surface); }
+.n2-dot.on { background: var(--accent); }
+.summary-list .iconbtn { width: 46px; height: 46px; }

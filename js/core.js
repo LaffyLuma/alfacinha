@@ -220,7 +220,7 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
   function mastery(v, t) { const x = S().conj[v + '|' + t]; if (!x) return null; const speed = x.ms < 3500 ? 1 : x.ms < 6000 ? 0.8 : 0.6; return Math.max(0, Math.min(1, x.ema * speed * Math.min(1, 0.4 + x.n / 10))); }
   function streak() {
     const s = S(); let n = 0; const d = new Date();
-    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0) + (r.trans || 0) + (r.dialog || 0) + (r.radioMin || 0) + (r.conv || 0) + (r.ritmo || 0) + (r.mission || 0) + (r.build || 0) + (r.vsay || 0) + (r.read || 0) + (r.lyric || 0)) > 0; };
+    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0) + (r.trans || 0) + (r.dialog || 0) + (r.radioMin || 0) + (r.conv || 0) + (r.ritmo || 0) + (r.mission || 0) + (r.build || 0) + (r.vsay || 0) + (r.read || 0) + (r.lyric || 0) + (r.session || 0)) > 0; };
     if (!active(todayKey(d))) d.setDate(d.getDate() - 1);
     while (active(todayKey(d))) { n++; d.setDate(d.getDate() - 1); }
     return n;

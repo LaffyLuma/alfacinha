@@ -82,7 +82,8 @@ When you get a new version, upload the changed files to the same GitHub repo. Ke
 
 | Section | What it does |
 |---|---|
-| **Hoje** | The planner: today's focus (rotates by weekday, swaps to your weakest pattern when you already know it), a morning block (reviews, verbs, transformations, context drill) and an evening block (conversation, sentences, say/write, ritmo), ~30 min each, run one after another with a session bar. **5 min** = a quick verb drill on today's focus |
+| **Sessão** (big button on Hoje) | One button, no decisions: a beat-the-clock verb warm-up, your due reviews, new phrases and words, a speaking mix, then a boss fight on a slip you keep making. Every answer has a time window that tightens as you get faster; late = Slow, so it comes back sooner. Combos, personal bests, and a road trip down the N2 from Chaves to Faro |
+| **Hoje** | The planner (under "Or plan the day in blocks"): today's focus (rotates by weekday, swaps to your weakest pattern when you already know it), a morning block (reviews, verbs, transformations, context drill) and an evening block (conversation, sentences, say/write, ritmo), ~30 min each, run one after another with a session bar. **5 min** = a quick verb drill on today's focus |
 | **Verbos** | Speak-first: hear the cue ("ontem, eu, fazer"), say the form, reveal, grade. Irregular forms marked ★, the surprising part underlined; endings coloured by pattern. The typed sprint is still there for the PC |
 | **Verb lookup** (book button, top bar) | Verbo rápido: the form you need, that pattern down the persons, that person across this week's patterns. Opens on what you're drilling; peeking mid-question counts as Slow |
 | **Falar → Transformar** | Hear a sentence, then say it changed (another person, another tense, a question, negative, pronoun, polite, passive, reported). Reveal, hear it, grade yourself. 72 sentences, 299 changes. No typing |

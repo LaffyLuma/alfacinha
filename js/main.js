@@ -2,7 +2,7 @@
 (function (P) {
   const { ICON, esc } = P;
   const NAV = [
-    ['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['drills', 'Contexto', 'drills'],
+    ['today', 'Hoje', 'today'], ['sessao', 'Sessão', 'ritmo'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['drills', 'Contexto', 'drills'],
     ['transform', 'Transformar', 'transform'], ['dialogues', 'Diálogos', 'dialog'], ['radio', 'Rádio', 'radio'],
     ['conversas', 'Conversas', 'conversa'], ['construir', 'Construir', 'transform'], ['ritmo', 'Ritmo', 'ritmo'], ['missoes', 'Missões', 'mission'],
     ['ler', 'Ler e ouvir', 'grammar'], ['write', 'Escrever', 'write'], ['partner', 'A dois', 'partner'], ['sep'], ['grammar', 'Gramática', 'grammar'], ['capture', 'Capture', 'capture'],

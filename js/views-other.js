@@ -35,7 +35,10 @@
         <p>Here's how to use this: two blocks of about <b>30 minutes</b>, a morning one for fundamentals and an evening one for speaking. Tap <b>Start</b> and the app walks you from one activity to the next. Short on time? <b>5 min</b> runs a quick verb drill on today's focus. Add what you learn in class under <b>Capture</b>.</p>
         <p class="small muted">Everything is saved on this device. ${Store.fsSupported() ? 'On this computer you can also link a save file in your Portuguese folder (Settings → Save file).' : 'Use Settings → Backup to export a save file now and then.'}</p></div>` : ''}
       ${P.Drive.connected() && P.Drive.state.status === 'needsAuth' ? `<div class="card" style="border-color:var(--warn)"><div class="row between"><span>Sync with Google Drive before you start, so you have your latest progress.</span><button class="btn sm primary" data-act="drive-sync">${ICON.cloud} Sync</button></div></div>` : ''}
-      ${P.planHTML()}
+      <div class="card start-card"><div class="row between" style="align-items:flex-start"><div><h2 style="margin:0">Start a session</h2>
+        <div class="small muted">Warm-up, reviews, new phrases, speaking, a boss fight. No decisions, just go.</div></div><span class="badge acc">N2 ${(((S().fun || {}).km || 0) % 738).toFixed(0)} km</span></div>
+        <div class="grid two" style="margin-top:12px"><button class="btn primary say-main" data-act="ss-start" data-k="short">Short · ~10 min</button><button class="btn say-main" data-act="ss-start" data-k="long">Long · ~25 min</button></div></div>
+      <details class="plan-more" ${(d.amDone || d.pmDone) ? 'open' : ''}><summary>Or plan the day in blocks · today's focus and 5-min mode</summary>${P.planHTML()}</details>
       <div class="grid two"><a class="card radio-cta" href="#/radio">${ICON.radio}<span>Going out? <b>Radio mode</b> turns a walk or ride into drill time.</span></a>
         <a class="card radio-cta" href="#/missoes">${ICON.mission}<span><b>Missões</b> this week: ${P.missionsWeekDone ? P.missionsWeekDone() : 0}/3 done</span></a></div>
       <div class="grid two">
