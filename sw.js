@@ -1,5 +1,5 @@
 /* Offline support. Network-first so updates arrive when online; cache fallback when offline. */
-const CACHE = 'pois-v11';
+const CACHE = 'pois-v12';
 const FILES = ['./', './index.html', './manifest.webmanifest', './css/app.css', './css/panel.css',
   './data/verbs.js', './data/vocab1.js', './data/vocab2.js', './data/vocab3.js', './data/build.js', './data/media.js', './data/chunks2.js', './data/verbsent.js', './data/chunks.js', './data/drills.js', './data/grammar.js', './data/partner.js', './data/transform.js', './data/dialogues.js', './data/conversas.js', './data/missions.js',
   './js/conj.js', './js/fsrs.js', './js/store.js', './js/core.js', './js/speak.js', './js/views-study.js', './js/views-other.js', './js/views-speak.js', './js/views-extra.js', './js/verbkit.js', './js/views-verbs.js', './js/views-build.js', './js/views-read.js', './js/planner.js', './js/session.js', './js/panel.js', './js/main.js', './js/drive.js', './config.js',

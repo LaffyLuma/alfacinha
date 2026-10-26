@@ -31,7 +31,7 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `data/vocab3.js` | 187 topic words (`VOCAB_TOPIC`, appended to `VOCAB`): bike, games, friends, music, audio, tech; `P.deck()` serves these themes before the generic deck |
 | `data/build.js` | 153 sentence-building items (`BUILD`): `{id, en, hints[2–3], a[], mark[], why, pat, topic, t?}` |
 | `data/media.js` | Ler e ouvir: `BOOKS` (parallel-reading list; editions not guaranteed, links to Kobo/Wook searches) and `ARTISTS` |
-| `data/conversas.js` | 16 scripted conversations (`CONVERSAS`): `nodes[]` of `{id, q, en, models[], mark[], check[], choices?|next?}`; first node starts, `choices` branch on what he said |
+| `data/conversas.js` | 28 scripted conversations (`CONVERSAS`): `nodes[]` of `{id, q, en, models[], mark[], check[], choices?|next?}`; first node starts, `choices` branch on what he said |
 | `data/missions.js` | 40 Lisbon missions (`MISSIONS`): `{id, title, en, task, where, lvl, phrases[{pt,en}]}`; three a week |
 | `js/fsrs.js` | FSRS-4.5 scheduler with default weights |
 | `js/store.js` | State in localStorage (`pois.state.v1`), optional linked save file (File System Access API), export/import, `merge()` (latest review wins per card, note tombstones, reset-aware), `fingerprint()` |
@@ -49,7 +49,7 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `js/views-build.js` | Construir (`#/construir`): English idea + hints → say the whole sentence → model + note → 1/2/3; `P.startBuild(focus)` for the planner |
 | `js/views-read.js` | Ler e ouvir (`#/ler`): reading log (`reading[]`, `readCur`), book and music lists, lyric → card (paste a line, tap first/last word, becomes a note card) |
 | `js/session.js` | Sessão (`#/sessao`, big button on Hoje): warm-up beat-the-clock verbs → due reviews (speak-first, `P.gradeCard`) → new items (half from `CHUNKS2`) → speaking mix (verb sentences, transformations, Construir) → boss fight on a recurring slip → summary. One item model `{kind,label,front,answer,say,cue,help,grade(g,ms)}`; per-kind time windows in `S().fun.win` (Got it after the window = Slow); combos, PBs, bosses, N2 km in `S().fun`. `P.startSession('short'|'long')` |
-| `data/chunks2.js`, `data/verbsent.js` | 145 everyday phrases (`CHUNKS2`, appended to `CHUNKS`) · 161 high-frequency verbs in sentences (`VERBSENT`, `{form}` = engine form) |
+| `data/chunks2.js`, `data/verbsent.js` | 432 everyday phrases incl. WhatsApp register (`CHUNKS2`, appended to `CHUNKS`) · 361 high-frequency verbs in sentences (`VERBSENT`, `{form}` = engine form) |
 | `js/main.js` | Hash router, nav, global `data-act` click delegation, boot |
 | `sw.js` | Network-first offline cache. **Bump `CACHE`** whenever files change |
 | `config.js` | `window.POIS_CONFIG.googleClientId`. Not secret |

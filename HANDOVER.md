@@ -31,3 +31,6 @@ Read `CLAUDE.md` first (architecture table, conventions, state keys). This file 
 - Time window per kind (verbs 5 s, cards 8 s, verb sentences 9 s, transformations/build 12 s), shrinking 6% after each fast Got it, growing 10% after Slow/Missed, kept in `S().fun.win[kind]`. Show a draining bar; reveal after the window caps the grade at Slow.
 - State: `S().fun = { win:{}, pb:{ rapid, combo }, bosses:{ key:{ hp, beaten } }, km }` (add to `fresh()`, merge with max, prune).
 - Hoje: big "Start session" (Short / Long) at the top; the two planner blocks move into a collapsed "Plan by blocks" section.
+
+## 26 Oct, later: content volume (pois-v12)
++287 everyday phrases (reactions, small talk, opinions, plans, texting/WhatsApp, phone, feelings, time, help, fillers → `CHUNKS2` now 432), +200 verb sentences on the slow tenses (`vc_*`: would / if I were / "that I…" / when-future / for me to / had done; `vd_*`: did / used to / lately / hei de / will → `VERBSENT` now 361), +12 branching conversations (`c_*` → 28). Proofread by two fresh agents. After this, the director asked to PAUSE and wait for Ryan's feedback from real use on the phone.

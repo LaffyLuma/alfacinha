@@ -248,7 +248,7 @@ BUILD.forEach((b, n) => {
 });
 
 // ---------- everyday phrases: [chunk, meaning, note, 'example with {cloze}', example_en, theme] ----------
-const CHTHEMES = ['social', 'reactions', 'opinions', 'plans', 'shops', 'help', 'feelings', 'time', 'fillers', 'phone'];
+const CHTHEMES = ['social', 'reactions', 'opinions', 'plans', 'shops', 'help', 'feelings', 'time', 'fillers', 'phone', 'texting'];
 const baseChunks = new Set(BASE_CHUNKS.map(e => e[0].toLowerCase()));
 const chSeen = new Set();
 CHUNKS2.forEach((e, n) => {
