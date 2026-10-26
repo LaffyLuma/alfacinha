@@ -85,6 +85,9 @@ When you get a new version, upload the changed files to the same GitHub repo. Ke
 | **Hoje** | Daily plan: reviews, a verb sprint, a context drill, transformations, a dialogue, and one speaking/writing prompt |
 | **Falar → Transformar** | Hear a sentence, then say it changed (another person, another tense, a question, negative, pronoun, polite, passive, reported). Reveal, hear it, grade yourself. 72 sentences, 299 changes. No typing |
 | **Falar → Diálogos** | 24 minus-one dialogues in two voices: listen, then play Ryan's part (or the other person's) out loud. Flag a line to add it to your reviews |
+| **Falar → Conversas** | 16 conversations about your life: the app asks, you answer out loud, then see model answers and a short check list; one tap on what you said picks the next question |
+| **Falar → Ritmo** | Tempo loop: speak along with a sentence that speeds up each clean pass. Click track: say the five persons of a verb on the beat; the tempo rises when you hold it |
+| **Falar → Missões** | Three real-life quests in Lisbon each week; when you've done one, tap the phrase you used and it becomes a review card |
 | **Falar → Rádio** | Hands-free drill for walks and rides: the app asks, waits, answers, moves on. Verbs, transformations, dialogue lines and vocab |
 | **Rever** | FSRS spaced repetition: 439 words in EP sentences, 80 expressions, plus everything you capture |
 | **Verbos** | Timed typing sprints across 146 verbs × 10 tenses. Misses become review cards. Also has full verb tables |

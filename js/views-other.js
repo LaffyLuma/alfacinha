@@ -31,7 +31,9 @@
       { done: (d.sprints || 0) > 0, t: 'Verb sprint', d: `${s.settings.sprintLen} quick forms · ${s.settings.tenses.map(k => Conj.TENSE[k].pt.replace('Pretérito ', '')).join(', ')}`, href: '#/gym', go: 'gym-start', btn: 'Start' },
       { done: (d.drillSessions || 0) > 0, t: 'Context drill', d: 'Pick the right tense in real sentences', href: '#/drills', go: 'drill-start', btn: 'Start' },
       { done: (d.trans || 0) > 0, t: 'Transformations', d: `Hear it, then say it changed · today: <b>${esc(Conj.label(P.focusTense()))}</b>`, href: '#/transform', go: 'tr-start', btn: 'Start' },
-      { done: (d.dialog || 0) > 0, t: 'Dialogue', d: 'Minus one: play your part out loud', href: '#/dialogues', btn: 'Open' },
+      // the app alternates a dialogue and a conversation day by day
+      dayIndex() % 2 ? { done: (d.dialog || 0) + (d.conv || 0) > 0, t: 'Conversation', d: 'Answer out loud about your life, then compare', href: '#/conversas', go: 'cv-suggest', btn: 'Start' }
+        : { done: (d.dialog || 0) + (d.conv || 0) > 0, t: 'Dialogue', d: 'Minus one: play your part out loud', href: '#/dialogues', btn: 'Open' },
       { done: (d.write || 0) > 0, t: 'Say or write it', d: esc(prompt.pt), href: '#/write', btn: 'Open' },
     ];
     const doneCount = items.filter(i => i.done).length;
@@ -45,7 +47,8 @@
       <div class="card"><h2>Hoje</h2><ul class="plan">${items.map(i => `<li class="${i.done ? 'done' : ''}">
         <span class="check">${ICON.check}</span><div class="grow"><div class="t">${i.t}</div><div class="d">${i.d}</div></div>
         <a class="btn sm ${i.done ? '' : 'primary'}" href="${i.href}" ${i.go ? `data-go="${i.go}"` : ''}>${i.done ? 'Again' : i.btn}</a></li>`).join('')}</ul></div>
-      <a class="card radio-cta" href="#/radio">${ICON.radio}<span>Going out? <b>Radio mode</b> turns a walk or ride into drill time.</span></a>
+      <div class="grid two"><a class="card radio-cta" href="#/radio">${ICON.radio}<span>Going out? <b>Radio mode</b> turns a walk or ride into drill time.</span></a>
+        <a class="card radio-cta" href="#/missoes">${ICON.mission}<span><b>Missões</b> this week: ${P.missionsWeekDone ? P.missionsWeekDone() : 0}/3 done</span></a></div>
       <div class="grid two">
         <div class="card"><h3>Had a class today?</h3><p class="small muted">Capture new words, corrections and phrases while they're fresh. They jump to the front of your new cards.</p><a class="btn" href="#/capture">${ICON.capture} Capture</a></div>
         <div class="card"><h3>Português a dois</h3><p class="small muted">A 15-minute Portuguese-only game with your partner. Cards, a timer and a notebook for her.</p><a class="btn" href="#/partner">${ICON.partner} Partner mode</a></div>

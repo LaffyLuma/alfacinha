@@ -28,6 +28,8 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `data/grammar.js`, `data/partner.js` | Grammar notes (HTML); partner guide, partner cards, writing prompts |
 | `data/transform.js` | 72 transformation items (`TRANSFORM`): `base` + `tr[]` of `{kind, ask, a[], mark[], why, hint?, v?, t?, p?}`. Kinds: person/tense/question/negate/pronoun/polite/passive/reported. Checked by `tests/content.test.js` |
 | `data/dialogues.js` | 24 minus-one dialogues (`DIALOGUES`): Ryan is always role B; B lines carry `hint` + `mark`; `formal` dialogues use o senhor / você |
+| `data/conversas.js` | 16 scripted conversations (`CONVERSAS`): `nodes[]` of `{id, q, en, models[], mark[], check[], choices?|next?}`; first node starts, `choices` branch on what he said |
+| `data/missions.js` | 40 Lisbon missions (`MISSIONS`): `{id, title, en, task, where, lvl, phrases[{pt,en}]}`; three a week |
 | `js/fsrs.js` | FSRS-4.5 scheduler with default weights |
 | `js/store.js` | State in localStorage (`pois.state.v1`), optional linked save file (File System Access API), export/import, `merge()` (latest review wins per card, note tombstones, reset-aware), `fingerprint()` |
 | `js/drive.js` | Google Drive sync: GIS token client, scope `drive.appdata`, one file `pois-progress.json` in appDataFolder; sync = pull → merge → push, 4 s after changes. Tokens last about 1 h; after that the user taps "Sync" because browsers block popups that aren't started by a tap |
@@ -36,11 +38,12 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `js/views-study.js` | Review session, conjugation gym, context drills, verb tables |
 | `js/views-other.js` | Today, partner mode, write, grammar, capture, progress, settings (including the Drive card) |
 | `js/views-speak.js` | Falar hub, Transformations (`#/transform`), Dialogues (`#/dialogues`), Radio (`#/radio`), `P.focusTense()` |
+| `js/views-extra.js` | Conversas (`#/conversas`), Ritmo (`#/ritmo`: tempo-ramped shadowing loops + verbs on a WebAudio click track), Missões (`#/missoes`: weekly shuffle by ISO week, `P.missionsWeekDone()`) |
 | `js/main.js` | Hash router, nav, global `data-act` click delegation, boot |
 | `sw.js` | Network-first offline cache. **Bump `CACHE`** whenever files change |
 | `config.js` | `window.POIS_CONFIG.googleClientId`. Not secret |
 
-State added in Oct 2026: `trans`, `dialog`, `radio` (top level) and settings `transLen`, `radioGap`, `radioLen`, `radioMix`; day counters `trans`, `transSessions`, `dialog`, `radioMin` (all count for the streak). Tenses have a plain-English `pat` label: `Conj.label(k)`.
+State added in Oct 2026: `trans`, `dialog`, `radio` (top level) and settings `transLen`, `radioGap`, `radioLen`, `radioMix`; day counters `trans`, `transSessions`, `dialog`, `radioMin` (all count for the streak). Added 26 Oct 2026: `conv`, `ritmo` (`loop`, `bpm`, `last`), `missions`; day counters `conv`, `ritmo`, `mission`. Tenses have a plain-English `pat` label: `Conj.label(k)`.
 
 Conventions: views render HTML strings into `#view`; buttons use `data-act="name"`, which maps to `Pois.actions[name]`; keyboard handlers are in `Pois.keys[route]`. Call `Store.change()` after mutating state (pass `{silent:true}` to skip the re-render).
 
@@ -56,5 +59,6 @@ Ryan's class (Lisbon Language Café B1) is the topic guide, not something to cop
 
 ## Planned work (Oct 2026)
 - `../Audit and Plan.md`: audit of the app against Ryan's learning brief and the phased plan. Read it before proposing features.
-- `../Build Spec - Speaking Drills.md`: full build spec for three features (transformation drills, minus-one dialogues, radio mode). Build from that spec exactly; don't start the other phases of the plan without being asked.
+- `../Build Spec - Speaking Drills.md`: full build spec for three features (transformation drills, minus-one dialogues, radio mode). Built and live (pois-v6).
+- 26 Oct 2026 (Ryan: "keep building"): built Phase 3 Conversas (scripted only, no Claude API), backlog Ritmo (tempo loops + click track) and Lisbon missions (pois-v7). Still unbuilt: Phase 1 (speak-first verb drill, quick-reference verb panel, planner, reminders), Phase 2 (production-first reviews, sentence building, passive note, topic vocab packs), Phase 4 (Ler e ouvir, lyric-to-card), Phase 5 polish. Don't add the Claude-API partner unless Ryan says yes.
 - Ryan does not want to be asked "shall I build this?" repeatedly. When given a spec, build it; when thinking, just think.

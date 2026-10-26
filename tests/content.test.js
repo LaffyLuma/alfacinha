@@ -2,7 +2,9 @@
    Run: node tests/content.test.js
    Partial check of one file while writing content (skips the totals and coverage checks):
      node tests/content.test.js --transform path/to/part.js
-     node tests/content.test.js --dialogues path/to/part.js */
+     node tests/content.test.js --dialogues path/to/part.js
+     node tests/content.test.js --conversas path/to/part.js
+     node tests/content.test.js --missions path/to/part.js */
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const args = process.argv.slice(2);
@@ -10,12 +12,16 @@ const argOf = k => { const i = args.indexOf(k); return i >= 0 ? path.resolve(arg
 const partial = args.length > 0;
 const tPath = argOf('--transform') || (partial ? null : path.join(ROOT, 'data', 'transform.js'));
 const dPath = argOf('--dialogues') || (partial ? null : path.join(ROOT, 'data', 'dialogues.js'));
+const cPath = argOf('--conversas') || (partial ? null : path.join(ROOT, 'data', 'conversas.js'));
+const mPath = argOf('--missions') || (partial ? null : path.join(ROOT, 'data', 'missions.js'));
 
 const Conj = require(path.join(ROOT, 'js', 'conj.js'));
 const VERBS = require(path.join(ROOT, 'data', 'verbs.js'));
 const FORMS = Object.fromEntries(VERBS.map(v => [v.v, Conj.conjugate(v)]));
 const TRANSFORM = tPath ? require(tPath).TRANSFORM : [];
 const DIALOGUES = dPath ? require(dPath).DIALOGUES : [];
+const CONVERSAS = cPath ? require(cPath).CONVERSAS : [];
+const MISSIONS = mPath ? require(mPath).MISSIONS : [];
 
 let fails = 0, checks = 0;
 const fail = (where, msg) => { fails++; console.log(`FAIL ${where}: ${msg}`); };
@@ -121,6 +127,72 @@ DIALOGUES.forEach((d, n) => {
   check(Array.isArray(d.notes) && d.notes.length >= 2 && d.notes.length <= 4, W, `needs 2–4 notes (has ${d.notes && d.notes.length})`);
 });
 
+// ---------- conversas (scripted conversations with branches) ----------
+const CTOPICS = ['bike', 'games', 'music', 'tech', 'friends', 'canada', 'lisbon', 'class', 'work', 'opinion', 'food', 'travel', 'health'];
+const cIds = new Set();
+CONVERSAS.forEach((c, n) => {
+  const W = `conversa[${n}] ${c.id}`;
+  check(typeof c.id === 'string' && c.id && !cIds.has(c.id), W, 'missing or duplicate id'); cIds.add(c.id);
+  ['title', 'en', 'target', 'terms', 'who'].forEach(k => check(typeof c[k] === 'string' && c[k].trim(), W, `${k} missing`));
+  check(CTOPICS.includes(c.topic), W, `topic not allowed: ${c.topic}`);
+  check(['A2', 'B1'].includes(c.lvl), W, `lvl must be A2 or B1 (got ${c.lvl})`);
+  check(typeof c.formal === 'boolean', W, 'formal must be true or false');
+  check(Array.isArray(c.nodes) && c.nodes.length >= 4 && c.nodes.length <= 8, W, `needs 4–8 nodes (has ${c.nodes && c.nodes.length})`);
+  const ids = new Set((c.nodes || []).map(x => x.id));
+  check(ids.size === (c.nodes || []).length, W, 'duplicate node ids');
+  let branches = 0;
+  (c.nodes || []).forEach(x => {
+    const w = `${W} node ${x.id}`;
+    check(typeof x.id === 'string' && x.id, w, 'node id missing');
+    check(typeof x.q === 'string' && /\?/.test(x.q), w, 'q must be a Portuguese question');
+    check(typeof x.en === 'string' && x.en.trim(), w, 'en missing');
+    check(Array.isArray(x.models) && x.models.length >= 2 && x.models.length <= 3, w, 'needs 2–3 model answers');
+    (x.models || []).forEach(m => { const wc = words(m); check(wc >= 6 && wc <= 45, w, `model answer should be 6–45 words (has ${wc}): ${m}`); guard(w + ' model', m); });
+    check(Array.isArray(x.check) && x.check.length >= 1 && x.check.length <= 3, w, 'needs 1–3 check-yourself lines');
+    (x.check || []).forEach(t => check(typeof t === 'string' && t.length <= 120, w, `check line too long (${t.length}): ${t}`));
+    check(Array.isArray(x.mark) && x.mark.length > 0, w, 'mark[] missing');
+    (x.mark || []).forEach(m => check((x.models || []).some(md => hasWord(md, m)), w, `mark "${m}" not found as a whole word in any model`));
+    if (x.choices) {
+      branches++;
+      check(Array.isArray(x.choices) && x.choices.length >= 2 && x.choices.length <= 3, w, 'choices must be 2–3');
+      x.choices.forEach(ch => { check(typeof ch.t === 'string' && ch.t.trim(), w, 'choice text missing'); check(ids.has(ch.next), w, `choice points to missing node ${ch.next}`); });
+      check(x.next === undefined, w, 'a node has either choices or next, not both');
+    }
+    if (x.next !== undefined) check(ids.has(x.next), w, `next points to missing node ${x.next}`);
+    guard(w + ' q', x.q);
+    if (c.formal === false) { checks++; if (/(?<![\p{L}])você(s)?(?![\p{L}])/iu.test([x.q, ...(x.models || [])].join(' '))) fail(w, '"você" in a conversation with formal: false'); }
+  });
+  check(branches >= 1, W, 'needs at least one node with choices');
+  // every path from the first node must end (no loops) after 3–6 questions, and every node must be reachable
+  const by = Object.fromEntries((c.nodes || []).map(x => [x.id, x]));
+  const nexts = x => x.choices ? x.choices.map(ch => ch.next) : x.next ? [x.next] : [];
+  const walk = (id, depth, seen) => {
+    const x = by[id]; if (!x) return;
+    if (seen.has(id)) { fail(W, `loop at node ${id}`); return; }
+    const nx = nexts(x);
+    if (!nx.length) { checks++; if (depth < 3 || depth > 6) fail(W, `a path has ${depth} questions (needs 3–6)`); return; }
+    nx.forEach(k => walk(k, depth + 1, new Set([...seen, id])));
+  };
+  const reach = new Set(); const go = id => { if (reach.has(id) || !by[id]) return; reach.add(id); nexts(by[id]).forEach(go); };
+  if (c.nodes && c.nodes.length) { walk(c.nodes[0].id, 1, new Set()); go(c.nodes[0].id); }
+  check(reach.size === ids.size, W, `unreachable nodes: ${[...ids].filter(k => !reach.has(k)).join(', ')}`);
+});
+
+// ---------- Lisbon missions ----------
+const WHERE = ['café', 'shop', 'transport', 'bike', 'health', 'errands', 'neighbours', 'phone', 'media', 'music', 'games', 'friends', 'class'];
+const mIds = new Set();
+MISSIONS.forEach((m, n) => {
+  const W = `mission[${n}] ${m.id}`;
+  check(typeof m.id === 'string' && m.id && !mIds.has(m.id), W, 'missing or duplicate id'); mIds.add(m.id);
+  ['title', 'en', 'task'].forEach(k => check(typeof m[k] === 'string' && m[k].trim(), W, `${k} missing`));
+  check(WHERE.includes(m.where), W, `where not allowed: ${m.where}`);
+  check(['A2', 'B1'].includes(m.lvl), W, `lvl must be A2 or B1 (got ${m.lvl})`);
+  check(typeof m.task === 'string' && m.task.length <= 220, W, 'task should be ≤ 220 chars');
+  check(Array.isArray(m.phrases) && m.phrases.length >= 2 && m.phrases.length <= 4, W, 'needs 2–4 phrases');
+  (m.phrases || []).forEach(ph => { check(ph && typeof ph.pt === 'string' && typeof ph.en === 'string' && ph.pt.trim() && ph.en.trim(), W, 'phrase needs pt and en'); if (ph) guard(W + ' phrase', ph.pt); });
+  guard(W + ' title', m.title);
+});
+
 // ---------- totals and coverage (full run only) ----------
 if (!partial) {
   check(TRANSFORM.length >= 70, 'transform', `at least 70 items needed (has ${TRANSFORM.length})`);
@@ -148,7 +220,12 @@ if (!partial) {
     check(targets.includes(p), 'dialogue coverage', `no dialogue targets "${p}"`));
   check(DIALOGUES.some(d => d.formal), 'dialogue coverage', 'no formal dialogue');
   check(tIds.size === TRANSFORM.length && dIds.size === DIALOGUES.length, 'ids', 'duplicate ids');
+  check(CONVERSAS.length >= 16, 'conversas', `at least 16 conversations needed (has ${CONVERSAS.length})`);
+  const ctargets = CONVERSAS.map(c => c.target.toLowerCase()).join(' | ');
+  ['did', 'used to', 'have been doing lately', 'would', 'that i', 'will', 'if i were'].forEach(p => check(ctargets.includes(p), 'conversa coverage', `no conversation targets "${p}"`));
+  check(MISSIONS.length >= 36, 'missions', `at least 36 missions needed (has ${MISSIONS.length})`);
   const nLines = DIALOGUES.reduce((a, d) => a + d.lines.length, 0);
+  console.log(`${CONVERSAS.length} conversations, ${CONVERSAS.reduce((a, c) => a + c.nodes.length, 0)} questions · ${MISSIONS.length} missions`);
   console.log(`${TRANSFORM.length} transformation items (${lv('A2')} A2, ${lv('B1')} B1), ${nTr} transformations · ${DIALOGUES.length} dialogues, ${nLines} lines`);
 }
 console.log(`${checks} checks, ${fails} failures`);
