@@ -88,7 +88,9 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
   const CHK = {}; CHUNKS.forEach(e => { CHK[e[0]] = e; });
   function deck() {
     const every = S().settings.chunkEvery || 4; const out = []; let c = 0;
-    VOCAB.forEach((e, i) => { out.push('v:' + e[0]); if ((i + 1) % every === 0 && c < CHUNKS.length) out.push('c:' + CHUNKS[c++][0]); });
+    const TOPIC = ['bike', 'games', 'friends', 'music', 'audio', 'tech'];
+    const vs = VOCAB.filter(e => TOPIC.includes(e[5])).concat(VOCAB.filter(e => !TOPIC.includes(e[5])));
+    vs.forEach((e, i) => { out.push('v:' + e[0]); if ((i + 1) % every === 0 && c < CHUNKS.length) out.push('c:' + CHUNKS[c++][0]); });
     while (c < CHUNKS.length) out.push('c:' + CHUNKS[c++][0]);
     return out;
   }
@@ -218,7 +220,7 @@ var Pois = window.Pois = { keys: {}, actions: {}, views: {} };
   function mastery(v, t) { const x = S().conj[v + '|' + t]; if (!x) return null; const speed = x.ms < 3500 ? 1 : x.ms < 6000 ? 0.8 : 0.6; return Math.max(0, Math.min(1, x.ema * speed * Math.min(1, 0.4 + x.n / 10))); }
   function streak() {
     const s = S(); let n = 0; const d = new Date();
-    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0) + (r.trans || 0) + (r.dialog || 0) + (r.radioMin || 0) + (r.conv || 0) + (r.ritmo || 0) + (r.mission || 0)) > 0; };
+    const active = k => { const r = s.days[k]; return r && ((r.rev || 0) + (r.conj || 0) + (r.drill || 0) + (r.write || 0) + (r.partnerMin || 0) + (r.trans || 0) + (r.dialog || 0) + (r.radioMin || 0) + (r.conv || 0) + (r.ritmo || 0) + (r.mission || 0) + (r.build || 0) + (r.vsay || 0) + (r.read || 0) + (r.lyric || 0)) > 0; };
     if (!active(todayKey(d))) d.setDate(d.getDate() - 1);
     while (active(todayKey(d))) { n++; d.setDate(d.getDate() - 1); }
     return n;

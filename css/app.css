@@ -291,3 +291,11 @@ details summary { cursor: pointer; font-weight: 650; }
 #sessionbar .btn { min-height: 40px; }
 @media (min-width: 900px) { #sessionbar { left: 230px; bottom: 0; } }
 #main { scroll-padding-bottom: 80px; }
+
+.hintchip { display: inline-block; border: 1px dashed var(--accent); color: var(--accent); border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: .95rem; }
+
+/* ler e ouvir */
+.book.on { border-color: var(--accent); }
+.lyric { display: flex; flex-wrap: wrap; gap: 6px; }
+.lw { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 10px; min-height: 44px; font-size: 1.02rem; cursor: pointer; color: var(--ink); }
+.lw.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }

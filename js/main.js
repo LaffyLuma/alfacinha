@@ -4,8 +4,8 @@
   const NAV = [
     ['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['drills', 'Contexto', 'drills'],
     ['transform', 'Transformar', 'transform'], ['dialogues', 'Diálogos', 'dialog'], ['radio', 'Rádio', 'radio'],
-    ['conversas', 'Conversas', 'conversa'], ['ritmo', 'Ritmo', 'ritmo'], ['missoes', 'Missões', 'mission'],
-    ['write', 'Escrever', 'write'], ['partner', 'A dois', 'partner'], ['sep'], ['grammar', 'Gramática', 'grammar'], ['capture', 'Capture', 'capture'],
+    ['conversas', 'Conversas', 'conversa'], ['construir', 'Construir', 'transform'], ['ritmo', 'Ritmo', 'ritmo'], ['missoes', 'Missões', 'mission'],
+    ['ler', 'Ler e ouvir', 'grammar'], ['write', 'Escrever', 'write'], ['partner', 'A dois', 'partner'], ['sep'], ['grammar', 'Gramática', 'grammar'], ['capture', 'Capture', 'capture'],
     ['progress', 'Progresso', 'progress'], ['settings', 'Definições', 'settings'],
   ];
   const TABS = [['today', 'Hoje', 'today'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['speak', 'Falar', 'dialog'], ['more', 'Mais', 'more']];
@@ -14,10 +14,10 @@
 
   function renderChrome(r) {
     const rr = r === 'tables' || r === 'sprint' ? 'gym' : r;
-    const tr = ['transform', 'dialogues', 'radio', 'conversas', 'ritmo', 'missoes'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
+    const tr = ['transform', 'dialogues', 'radio', 'conversas', 'ritmo', 'missoes', 'construir'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
     document.getElementById('sidebar').innerHTML = `<a class="brand" href="#/today"><span class="brand-mark">A</span>Alfacinha</a>` +
       NAV.map(n => n[0] === 'sep' ? '<div class="sep"></div>' : `<a class="nav ${rr === n[0] ? 'on' : ''}" href="#/${n[0]}">${ICON[n[2]]}${n[1]}</a>`).join('');
-    const moreRoutes = ['more', 'drills', 'write', 'grammar', 'capture', 'progress', 'settings', 'tables', 'partner'];
+    const moreRoutes = ['more', 'drills', 'write', 'grammar', 'capture', 'progress', 'settings', 'tables', 'partner', 'ler'];
     document.getElementById('tabbar').innerHTML = TABS.map(t => `<a href="#/${t[0]}" class="${(t[0] === 'more' ? moreRoutes.includes(r) && r !== 'tables' : tr === t[0]) ? 'on' : ''}">${ICON[t[2]]}${t[1]}</a>`).join('');
     const fs = Store.fileStatus();
     const due = P.dueIds().length;

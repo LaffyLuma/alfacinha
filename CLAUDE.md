@@ -28,6 +28,9 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `data/grammar.js`, `data/partner.js` | Grammar notes (HTML); partner guide, partner cards, writing prompts |
 | `data/transform.js` | 72 transformation items (`TRANSFORM`): `base` + `tr[]` of `{kind, ask, a[], mark[], why, hint?, v?, t?, p?}`. Kinds: person/tense/question/negate/pronoun/polite/passive/reported. Checked by `tests/content.test.js` |
 | `data/dialogues.js` | 24 minus-one dialogues (`DIALOGUES`): Ryan is always role B; B lines carry `hint` + `mark`; `formal` dialogues use o senhor / você |
+| `data/vocab3.js` | 187 topic words (`VOCAB_TOPIC`, appended to `VOCAB`): bike, games, friends, music, audio, tech; `P.deck()` serves these themes before the generic deck |
+| `data/build.js` | 153 sentence-building items (`BUILD`): `{id, en, hints[2–3], a[], mark[], why, pat, topic, t?}` |
+| `data/media.js` | Ler e ouvir: `BOOKS` (parallel-reading list; editions not guaranteed, links to Kobo/Wook searches) and `ARTISTS` |
 | `data/conversas.js` | 16 scripted conversations (`CONVERSAS`): `nodes[]` of `{id, q, en, models[], mark[], check[], choices?|next?}`; first node starts, `choices` branch on what he said |
 | `data/missions.js` | 40 Lisbon missions (`MISSIONS`): `{id, title, en, task, where, lvl, phrases[{pt,en}]}`; three a week |
 | `js/fsrs.js` | FSRS-4.5 scheduler with default weights |
@@ -43,6 +46,8 @@ Ryan is **not a developer**. Explain steps plainly and don't assume he knows git
 | `js/views-verbs.js` | Verbos (`#/gym`): speak-first verb drill (cue → say → reveal → 1/2/3), ★ irregulars, follow-up chains, one help line after a miss, `P.startVerbDrill({minutes, tenses, verb})`, `P.queueDrill`. The typed sprint moved to `#/sprint` (`V.sprint` in views-study.js) |
 | `js/panel.js`, `css/panel.css` | Verbo rápido lookup panel (top-bar button, `P.openPanel(ctx)`); pages set `P.panelCtx`; opening it during a drill's cue counts as a peek (graded Slow at best) |
 | `js/planner.js` | Hoje planner: focus per weekday (`P.todayFocus`, `P.planFocusTenses`), two guided ~30-min blocks with a session bar and hand-off via `P.stepDone(kind)` from each activity's end screen, 5-min mode |
+| `js/views-build.js` | Construir (`#/construir`): English idea + hints → say the whole sentence → model + note → 1/2/3; `P.startBuild(focus)` for the planner |
+| `js/views-read.js` | Ler e ouvir (`#/ler`): reading log (`reading[]`, `readCur`), book and music lists, lyric → card (paste a line, tap first/last word, becomes a note card) |
 | `js/main.js` | Hash router, nav, global `data-act` click delegation, boot |
 | `sw.js` | Network-first offline cache. **Bump `CACHE`** whenever files change |
 | `config.js` | `window.POIS_CONFIG.googleClientId`. Not secret |
@@ -64,5 +69,5 @@ Ryan's class (Lisbon Language Café B1) is the topic guide, not something to cop
 ## Planned work (Oct 2026)
 - `../Audit and Plan.md`: audit of the app against Ryan's learning brief and the phased plan. Read it before proposing features.
 - `../Build Spec - Speaking Drills.md`: full build spec for three features (transformation drills, minus-one dialogues, radio mode). Built and live (pois-v6).
-- 26 Oct 2026 (Ryan: "keep building"): built Phase 3 Conversas (scripted only, no Claude API), backlog Ritmo (tempo loops + click track) and Lisbon missions (pois-v7), then Phase 1: speak-first verb drill, verb panel, planner + 5-min mode (pois-v8). Still unbuilt: Phase 1d reminders, Phase 2 (production-first reviews, sentence building, passive note, topic vocab packs), Phase 4 (Ler e ouvir, lyric-to-card), Phase 5 polish. Don't add the Claude-API partner unless Ryan says yes.
+- 26 Oct 2026 (Ryan: "keep building"): built Phase 3 Conversas (scripted only, no Claude API), backlog Ritmo (tempo loops + click track) and Lisbon missions (pois-v7), then Phase 1: speak-first verb drill, verb panel, planner + 5-min mode (pois-v8). Then Phase 2: topic vocab packs, sentence building, passive grammar note; Phase 4 Ler e ouvir (pois-v10). Still unbuilt: Phase 1d reminders, Phase 2 production-first review flip and foundations check, Phase 5 polish. NEXT (Ryan, 26 Oct, via the director session): one big "Start session" guided flow and recall-speed features; see HANDOVER.md. Don't add the Claude-API partner unless Ryan says yes.
 - Ryan does not want to be asked "shall I build this?" repeatedly. When given a spec, build it; when thinking, just think.

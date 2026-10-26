@@ -253,5 +253,18 @@ var GRAMMAR = [
 <h4>Shadowing (5 minutes a day)</h4>
 <ol><li>Pick a 10–20 second clip (podcast, RTP, the app's audio).</li><li>Listen once with the text.</li><li>Play it again and speak <b>along with it</b>, a split second behind, copying rhythm and melody rather than individual sounds.</li><li>Repeat 3–5 times. Then say it alone.</li></ol>
 <p class="tip">As a musician: treat EP like a groove. Stressed syllables are the downbeats and everything between them gets compressed.</p>` },
+  { id: 'passive', title: 'Was built / is closed (passive)', lvl: 'B1', html: `
+<p>Two English patterns, two Portuguese ones. Both use the <b>participle</b> (the -ado / -ido word: feito, aberto, construído), and the participle <b>agrees</b> with the thing: a ponte foi construíd<b>a</b>, os ficheiros foram apagad<b>os</b>.</p>
+<h4>"was built": the event (ser + participle)</h4>
+<ul><li>A ponte <b>foi construída</b> em 1966. <span class="muted">The bridge was built in 1966.</span></li>
+<li>O email <b>foi enviado</b> ontem. <span class="muted">The email was sent yesterday.</span></li>
+<li>Who did it? Add <b>por</b>: a música foi gravada <b>pelo</b> Tiago.</li></ul>
+<h4>"is closed": the state you find (estar + participle)</h4>
+<ul><li>A loja <b>está fechada</b>. <span class="muted">The shop is closed (that's how it is now).</span></li>
+<li>A reunião <b>está marcada</b> para as dez. <span class="muted">The meeting is set for ten.</span></li>
+<li>O router <b>está desligado</b>. <span class="muted">The router is off.</span></li></ul>
+<h4>In speech</h4>
+<p>People often avoid the passive: <b>Construíram</b> a ponte em 1966 (they built…) or <b>Vende-se</b> casa (house for sale). Recognise the passive, but both are normal.</p>
+<p class="tip">Practise it: Falar → Transformar → the <b>passive</b> chip, or Falar → Construir → <b>passive</b>.</p>` },
 ];
 if (typeof module !== 'undefined') module.exports = GRAMMAR;

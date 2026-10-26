@@ -33,11 +33,11 @@
 
   // ======================= HUB =======================
   V.speak = function (el) {
-    const items = [['conversas', 'Conversas', 'Answer questions about your life, then compare'], ['transform', 'Transformar', 'Hear a sentence, then say it changed'], ['dialogues', 'Diálogos', 'Minus one: play your part out loud'],
+    const items = [['conversas', 'Conversas', 'Answer questions about your life, then compare'], ['construir', 'Construir', 'English idea + a few words → say the whole sentence'], ['transform', 'Transformar', 'Hear a sentence, then say it changed'], ['dialogues', 'Diálogos', 'Minus one: play your part out loud'],
       ['ritmo', 'Ritmo', 'Shadow at rising speed · verbs on a click track'], ['missoes', 'Missões', 'This week\'s real-life quests in Lisbon'],
       ['radio', 'Rádio', 'Hands-free drills for walks and rides'], ['write', 'Escrever', 'Daily speaking & writing prompt']];
     el.innerHTML = `<div class="hero"><div><h1>Falar</h1><div class="muted">Say it out loud. Nothing to type.</div></div></div>
-      <div class="card menu">${items.map(([k, t, d]) => `<a href="#/${k}">${ICON[{ transform: 'transform', dialogues: 'dialog', radio: 'radio', write: 'write', conversas: 'conversa', ritmo: 'ritmo', missoes: 'mission' }[k]]}<span>${t}<small>${d}</small></span></a>`).join('')}</div>`;
+      <div class="card menu">${items.map(([k, t, d]) => `<a href="#/${k}">${ICON[{ transform: 'transform', dialogues: 'dialog', radio: 'radio', write: 'write', conversas: 'conversa', ritmo: 'ritmo', missoes: 'mission', construir: 'write' }[k]]}<span>${t}<small>${d}</small></span></a>`).join('')}</div>`;
   };
 
   // ======================= TRANSFORMATIONS =======================

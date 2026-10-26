@@ -19,7 +19,9 @@
       radio: { flagged: [], minutes: 0, used: {} }, // flagged: items to bring back on screen; used: flag key → time it was consumed
       conv: {},       // conversation stats: conversaId → { runs, last, rating }
       ritmo: { loop: {}, bpm: {}, last: 0 }, // loop: sentence key → best tempo (rate); bpm: tense → best BPM held
-      missions: {} }; // missionId → { done, phrase } (done = time completed)
+      missions: {},   // missionId → { done, phrase } (done = time completed)
+      build: {},      // sentence building: itemId → { n, ok, ema, last }
+      reading: [], readCur: '' }; // reading log sessions { id, date, book, pages, mins }; the book you're on now (per device)
   }
   let state = null;
   let listeners = [], anyListeners = [];
@@ -159,6 +161,7 @@
     for (const [k, x] of Object.entries(b.conv)) { const y = out.conv[k]; if (!y || (x.runs || 0) > (y.runs || 0)) out.conv[k] = x; }
     const rm = (p, q) => { const o = Object.assign({}, p || {}); for (const [k, v] of Object.entries(q || {})) o[k] = Math.max(o[k] || 0, v); return o; };
     out.ritmo = { loop: rm(a.ritmo.loop, b.ritmo.loop), bpm: rm(a.ritmo.bpm, b.ritmo.bpm), last: Math.max(a.ritmo.last || 0, b.ritmo.last || 0) };
+    for (const [k, x] of Object.entries(b.build)) { const y = out.build[k]; if (!y || (x.n || 0) > (y.n || 0)) out.build[k] = x; }
     for (const [k, x] of Object.entries(b.missions)) { const y = out.missions[k]; if (!y || (x.done || 0) > (y.done || 0)) out.missions[k] = x; }
     for (const [d, x] of Object.entries(b.days)) {
       const y = out.days[d];
@@ -167,6 +170,7 @@
       out.days[d] = m;
     }
     const ids = new Set(out.journal.map(j => j.id)); b.journal.forEach(j => { if (!ids.has(j.id)) out.journal.push(j); });
+    const rids = new Set(out.reading.map(j => j.id)); b.reading.forEach(j => { if (!rids.has(j.id)) out.reading.push(j); });
     const pids = new Set(out.partnerLog.map(j => j.id)); b.partnerLog.forEach(j => { if (!pids.has(j.id)) out.partnerLog.push(j); });
     out.journal.sort((x, y) => y.date - x.date); out.partnerLog.sort((x, y) => y.date - x.date);
     out.seenGuide = a.seenGuide || b.seenGuide;
@@ -198,13 +202,14 @@
     x.radio.flagged = (x.radio.flagged || []).filter(d => (d.at || 0) >= R);
     for (const [k, c] of Object.entries(x.conv)) if ((c.last || 0) < R) delete x.conv[k];
     for (const [k, c] of Object.entries(x.missions)) if ((c.done || 0) < R) delete x.missions[k];
+    for (const [k, c] of Object.entries(x.build)) if ((c.last || 0) < R) delete x.build[k];
     if ((x.ritmo.last || 0) < R) x.ritmo = { loop: {}, bpm: {}, last: 0 };
     const rk = new Date(R); const rkey = `${rk.getFullYear()}-${String(rk.getMonth() + 1).padStart(2, '0')}-${String(rk.getDate()).padStart(2, '0')}`;
     for (const k of Object.keys(x.days)) if (k < rkey) delete x.days[k];
-    x.journal = x.journal.filter(j => j.date >= R); x.partnerLog = x.partnerLog.filter(j => j.date >= R);
+    x.journal = x.journal.filter(j => j.date >= R); x.reading = (x.reading || []).filter(j => j.date >= R); x.partnerLog = x.partnerLog.filter(j => j.date >= R);
   }
   // A compact fingerprint of the learning data, used to tell whether a merge actually changed anything.
-  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions]); }
+  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions, x.build, x.reading.length]); }
   function validate(obj) { return obj && typeof obj === 'object' && obj.v && obj.cards && obj.settings; }
 
   const api = { load, get, change, flush, onChange, onAnyChange, replace, fingerprint, fresh, merge, radioKey, validate, exportBlob,

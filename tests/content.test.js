@@ -6,7 +6,9 @@
      node tests/content.test.js --conversas path/to/part.js
      node tests/content.test.js --missions path/to/part.js
      node tests/content.test.js --topicvocab path/to/part.js
-     node tests/content.test.js --build path/to/part.js */
+     node tests/content.test.js --build path/to/part.js
+     node tests/content.test.js --chunks path/to/part.js
+     node tests/content.test.js --verbsent path/to/part.js */
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const args = process.argv.slice(2);
@@ -19,6 +21,8 @@ const mPath = argOf('--missions') || (partial ? null : path.join(ROOT, 'data', '
 const vPath = argOf('--topicvocab') || (partial ? null : path.join(ROOT, 'data', 'vocab3.js'));
 const bPath = argOf('--build') || (partial ? null : path.join(ROOT, 'data', 'build.js'));
 const fs = require('fs');
+const chPath = argOf('--chunks') || (partial ? null : path.join(ROOT, 'data', 'chunks2.js'));
+const vsPath = argOf('--verbsent') || (partial ? null : path.join(ROOT, 'data', 'verbsent.js'));
 
 const Conj = require(path.join(ROOT, 'js', 'conj.js'));
 const VERBS = require(path.join(ROOT, 'data', 'verbs.js'));
@@ -33,6 +37,9 @@ const BASE_VOCAB = [];
 ['vocab1.js', 'vocab2.js'].forEach(f => loadVocab(path.join(ROOT, 'data', f)).forEach(e => BASE_VOCAB.push(e)));
 const TOPIC_VOCAB = vPath ? (require(vPath).VOCAB_TOPIC || []) : [];
 const BUILD = bPath ? require(bPath).BUILD : [];
+const BASE_CHUNKS = (() => { const g = {}; new Function('g', fs.readFileSync(path.join(ROOT, 'data', 'chunks.js'), 'utf8').replace(/\bvar CHUNKS\b/, 'g.CHUNKS').replace(/if \(typeof module[^\n]*/g, ''))(g); return g.CHUNKS || []; })();
+const CHUNKS2 = chPath && fs.existsSync(chPath) ? require(chPath).CHUNKS2 : [];
+const VERBSENT = vsPath && fs.existsSync(vsPath) ? require(vsPath).VERBSENT : [];
 
 let fails = 0, checks = 0;
 const fail = (where, msg) => { fails++; console.log(`FAIL ${where}: ${msg}`); };
@@ -240,6 +247,51 @@ BUILD.forEach((b, n) => {
   (b.a || []).forEach(x => guard(W + ' a', x)); (b.hints || []).forEach(h => guard(W + ' hint', h));
 });
 
+// ---------- everyday phrases: [chunk, meaning, note, 'example with {cloze}', example_en, theme] ----------
+const CHTHEMES = ['social', 'reactions', 'opinions', 'plans', 'shops', 'help', 'feelings', 'time', 'fillers', 'phone'];
+const baseChunks = new Set(BASE_CHUNKS.map(e => e[0].toLowerCase()));
+const chSeen = new Set();
+CHUNKS2.forEach((e, n) => {
+  const W = `chunks2[${n}] ${e && e[0]}`;
+  check(Array.isArray(e) && e.length === 6 && [0, 1, 3, 4, 5].every(i => typeof e[i] === 'string' && e[i].trim()) && typeof e[2] === 'string', W, 'entry must be [chunk, meaning, note, example with {cloze}, example_en, theme]');
+  if (!Array.isArray(e)) return;
+  const k = String(e[0]).toLowerCase();
+  check(!baseChunks.has(k), W, `"${e[0]}" already exists in data/chunks.js`);
+  check(!chSeen.has(k), W, `duplicate chunk "${e[0]}"`); chSeen.add(k);
+  check(CHTHEMES.includes(e[5]), W, `theme not allowed: ${e[5]}`);
+  check(((e[3] || '').match(/\{[^}]+\}/g) || []).length === 1, W, `example needs exactly one {cloze}: ${e[3]}`);
+  const wc = words(String(e[3]).replace(/[{}]/g, '')); check(wc >= 4 && wc <= 18, W, `example should be 4–18 words (has ${wc})`);
+  guard(W + ' chunk', e[0]); guard(W + ' example', e[3]);
+});
+
+// ---------- high-frequency verbs in real sentences: { id, v, t, p, s: 'with {form}', en } ----------
+const vsIds = new Set();
+VERBSENT.forEach((x, n) => {
+  const W = `verbsent[${n}] ${x.id}`;
+  check(typeof x.id === 'string' && x.id && !vsIds.has(x.id), W, 'missing or duplicate id'); vsIds.add(x.id);
+  check(!!FORMS[x.v], W, `verb not in VERBS: ${x.v}`);
+  check(!!Conj.TENSE[x.t], W, `t not a tense key: ${x.t}`);
+  check([0, 1, 2, 3, 4].includes(x.p), W, `p must be 0–4`);
+  check(typeof x.en === 'string' && x.en.trim(), W, 'en missing');
+  const m = String(x.s || '').match(/\{([^}]+)\}/g) || [];
+  check(m.length === 1, W, `s needs exactly one {form}: ${x.s}`);
+  if (m.length === 1 && FORMS[x.v] && FORMS[x.v][x.t]) { const f = FORMS[x.v][x.t][x.p]; const got = m[0].slice(1, -1); check(f && (got === f || (x.t === 'cond' && got === FORMS[x.v].pimp[x.p])), W, `{${got}} should be the engine form "${f}" (${x.v}/${x.t}/${x.p})`); }
+  const wc = words(String(x.s || '').replace(/[{}]/g, '')); check(wc >= 5 && wc <= 15, W, `sentence should be 5–15 words (has ${wc})`);
+  guard(W, String(x.s || '').replace(/[{}]/g, ''));
+});
+
+// ---------- Ler e ouvir: books and artists ----------
+const media = partial ? { BOOKS: [], ARTISTS: [] } : require(path.join(ROOT, 'data', 'media.js'));
+const bkIds = new Set();
+media.BOOKS.forEach((b, n) => {
+  const W = `book[${n}] ${b.id}`;
+  check(b.id && !bkIds.has(b.id), W, 'missing or duplicate id'); bkIds.add(b.id);
+  ['pt', 'en', 'by', 'pub', 'lvl', 'why'].forEach(k => check(typeof b[k] === 'string' && b[k].trim(), W, `${k} missing`));
+  guard(W, b.pt);
+});
+media.ARTISTS.forEach((x, n) => check(x.name && x.style, `artist[${n}]`, 'name and style needed'));
+if (!partial) { check(media.BOOKS.length >= 6, 'media', 'at least 6 books'); check(media.ARTISTS.length >= 12, 'media', 'at least 12 artists'); }
+
 // ---------- totals and coverage (full run only) ----------
 if (!partial) {
   check(TRANSFORM.length >= 70, 'transform', `at least 70 items needed (has ${TRANSFORM.length})`);
@@ -273,6 +325,8 @@ if (!partial) {
   check(MISSIONS.length >= 36, 'missions', `at least 36 missions needed (has ${MISSIONS.length})`);
   check(TOPIC_VOCAB.length >= 150, 'topic vocab', `at least 150 topic words needed (has ${TOPIC_VOCAB.length})`);
   VTHEMES.forEach(t => check(TOPIC_VOCAB.filter(e => e[5] === t).length >= 15, 'topic vocab', `theme "${t}" needs at least 15 words`));
+  if (fs.existsSync(path.join(ROOT, 'data', 'chunks2.js'))) check(CHUNKS2.length >= 140, 'chunks2', `at least 140 phrases (has ${CHUNKS2.length})`);
+  if (fs.existsSync(path.join(ROOT, 'data', 'verbsent.js'))) { check(VERBSENT.length >= 150, 'verbsent', `at least 150 verb sentences (has ${VERBSENT.length})`); ['pps', 'pimp', 'ppc', 'cond', 'cpres', 'cimp', 'pres', 'fut'].forEach(t => check(VERBSENT.filter(x => x.t === t).length >= 10, 'verbsent coverage', `tense ${t} needs at least 10 sentences`)); }
   check(BUILD.length >= 140, 'build', `at least 140 sentence-building items needed (has ${BUILD.length})`);
   PATS.forEach(p => check(BUILD.filter(b => b.pat === p).length >= 6, 'build coverage', `pattern "${p}" needs at least 6 items`));
   const nLines = DIALOGUES.reduce((a, d) => a + d.lines.length, 0);

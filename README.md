@@ -87,15 +87,17 @@ When you get a new version, upload the changed files to the same GitHub repo. Ke
 | **Verb lookup** (book button, top bar) | Verbo rápido: the form you need, that pattern down the persons, that person across this week's patterns. Opens on what you're drilling; peeking mid-question counts as Slow |
 | **Falar → Transformar** | Hear a sentence, then say it changed (another person, another tense, a question, negative, pronoun, polite, passive, reported). Reveal, hear it, grade yourself. 72 sentences, 299 changes. No typing |
 | **Falar → Diálogos** | 24 minus-one dialogues in two voices: listen, then play Ryan's part (or the other person's) out loud. Flag a line to add it to your reviews |
+| **Falar → Construir** | 153 sentences: an English idea and 2–3 Portuguese words; say the whole sentence, then compare with the model and a one-line note on the pattern |
 | **Falar → Conversas** | 16 conversations about your life: the app asks, you answer out loud, then see model answers and a short check list; one tap on what you said picks the next question |
 | **Falar → Ritmo** | Tempo loop: speak along with a sentence that speeds up each clean pass. Click track: say the five persons of a verb on the beat; the tempo rises when you hold it |
 | **Falar → Missões** | Three real-life quests in Lisbon each week; when you've done one, tap the phrase you used and it becomes a review card |
 | **Falar → Rádio** | Hands-free drill for walks and rides: the app asks, waits, answers, moves on. Verbs, transformations, dialogue lines and vocab |
-| **Rever** | FSRS spaced repetition: 439 words in EP sentences, 80 expressions, plus everything you capture |
+| **Rever** | FSRS spaced repetition: 439 words in EP sentences plus 187 words from your own life (bike, games, friends, guitar, REAPER/audio, tech) that come first, 80 expressions, plus everything you capture |
 | **Verbos** | Timed typing sprints across 146 verbs × 10 tenses. Misses become review cards. Also has full verb tables |
 | **Contexto** | Choose the tense (perfeito/imperfeito, simples/composto, ser/estar, indicativo/conjuntivo) and then type the form |
 | **Escrever** | Daily prompt: write, hear it read back, copy it to get corrections |
 | **A dois** (under Mais) | Partner mode: a guide for her, 18 conversation games, a Portuguese-only timer, and a notebook that feeds your reviews |
+| **Ler e ouvir** (Mais) | Reading log for parallel EP/English books (Kobo/Wook search links; check it's a Portugal edition), Portuguese music list, and lyric → card |
 | **Gramática** | 14 short notes written for English speakers, each linked to a drill |
 | **Capture** | Add words, corrections and phrases from class. They come first among your new cards |
 | **Progresso** | Streak, recall rate, a verb-mastery heatmap and your weakest forms |
