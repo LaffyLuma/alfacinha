@@ -4,7 +4,9 @@
      node tests/content.test.js --transform path/to/part.js
      node tests/content.test.js --dialogues path/to/part.js
      node tests/content.test.js --conversas path/to/part.js
-     node tests/content.test.js --missions path/to/part.js */
+     node tests/content.test.js --missions path/to/part.js
+     node tests/content.test.js --topicvocab path/to/part.js
+     node tests/content.test.js --build path/to/part.js */
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const args = process.argv.slice(2);
@@ -14,6 +16,9 @@ const tPath = argOf('--transform') || (partial ? null : path.join(ROOT, 'data', 
 const dPath = argOf('--dialogues') || (partial ? null : path.join(ROOT, 'data', 'dialogues.js'));
 const cPath = argOf('--conversas') || (partial ? null : path.join(ROOT, 'data', 'conversas.js'));
 const mPath = argOf('--missions') || (partial ? null : path.join(ROOT, 'data', 'missions.js'));
+const vPath = argOf('--topicvocab') || (partial ? null : path.join(ROOT, 'data', 'vocab3.js'));
+const bPath = argOf('--build') || (partial ? null : path.join(ROOT, 'data', 'build.js'));
+const fs = require('fs');
 
 const Conj = require(path.join(ROOT, 'js', 'conj.js'));
 const VERBS = require(path.join(ROOT, 'data', 'verbs.js'));
@@ -22,6 +27,12 @@ const TRANSFORM = tPath ? require(tPath).TRANSFORM : [];
 const DIALOGUES = dPath ? require(dPath).DIALOGUES : [];
 const CONVERSAS = cPath ? require(cPath).CONVERSAS : [];
 const MISSIONS = mPath ? require(mPath).MISSIONS : [];
+// vocab files append to a global VOCAB; load the base deck first so duplicates against it are caught
+const loadVocab = f => { const g = {}; new Function('g', fs.readFileSync(f, 'utf8').replace(/\bvar VOCAB\b/, 'g.VOCAB').replace(/typeof VOCAB !== 'undefined' \? VOCAB/g, "g.VOCAB ? g.VOCAB").replace(/if \(typeof module[^\n]*/g, ''))(g); return g.VOCAB || []; };
+const BASE_VOCAB = [];
+['vocab1.js', 'vocab2.js'].forEach(f => loadVocab(path.join(ROOT, 'data', f)).forEach(e => BASE_VOCAB.push(e)));
+const TOPIC_VOCAB = vPath ? (require(vPath).VOCAB_TOPIC || []) : [];
+const BUILD = bPath ? require(bPath).BUILD : [];
 
 let fails = 0, checks = 0;
 const fail = (where, msg) => { fails++; console.log(`FAIL ${where}: ${msg}`); };
@@ -36,7 +47,7 @@ const words = s => s.trim().split(/\s+/).filter(x => /[\p{L}\d]/u.test(x)).lengt
 const BR = [
   [/\b(est(ou|ás|á|amos|ão)|estava\w*)\s+\w+ndo\b/i, '-ndo progressive (use estar a + infinitivo)'],
   [/(?<![\p{L}])(estou|estás|está|estamos|estão|estava|estavas|estávamos|estavam|fico|ficou|continua|continuo|ando|anda)\s+[\p{L}]+ndo(?![\p{L}])/iu, '-ndo progressive (use estar a + infinitivo)'],
-  [/\ba gente\b/, '"a gente"'],
+  [/(?<!\btoda )\ba gente\b/i, '"a gente" ("toda a gente" = everyone is fine)'],
   [/(?<![\p{L}])(legal|ônibus|onibus|trem|celular|tchau|banheiro|café da manhã|sorvete|açougue|bonde)(?![\p{L}])/iu, 'Brazilian word'],
   [/(?<![\p{L}])(pra|pro|tela|mouse|geladeira|arquivo|arquivos|deletar|deletei|cadastro|xícara|suco|galera|bacana|garoto|garota|planejar|planejei|planejamos|registro|acessar|acessei|equipe|contato|time de futebol|moça|ônibus)(?![\p{L}])/iu, 'Brazilian word or spelling'],
   [/(?<![\p{L}])(salvar|salvei|salvaste|salvou|salvámos)\s+(o|a|os|as)\s+(ficheiro|projeto|projecto|faixa|trabalho|documento)/iu, '"salvar" a file (EP: guardar / gravar)'],
@@ -193,6 +204,42 @@ MISSIONS.forEach((m, n) => {
   guard(W + ' title', m.title);
 });
 
+// ---------- topic vocab packs: [word, en, type, 'sentence with {cloze}', sentence_en, theme] ----------
+const VTHEMES = ['bike', 'games', 'music', 'audio', 'tech', 'friends'];
+const baseWords = new Set(BASE_VOCAB.map(e => e[0]));
+const tWords = new Set();
+TOPIC_VOCAB.forEach((e, n) => {
+  const W = `topicvocab[${n}] ${e && e[0]}`;
+  check(Array.isArray(e) && e.length === 6 && e.every(x => typeof x === 'string' && x.trim()), W, 'entry must be [word, en, type, sentence, sentence_en, theme], all non-empty strings');
+  if (!Array.isArray(e)) return;
+  check(!baseWords.has(e[0]), W, `"${e[0]}" already exists in vocab1/vocab2`);
+  check(!tWords.has(e[0]), W, `duplicate word "${e[0]}"`); tWords.add(e[0]);
+  check(VTHEMES.includes(e[5]), W, `theme not allowed: ${e[5]}`);
+  check(((e[3] || '').match(/\{[^}]+\}/g) || []).length === 1, W, `sentence needs exactly one {cloze}: ${e[3]}`);
+  const wc = words(String(e[3]).replace(/[{}]/g, '')); check(wc >= 5 && wc <= 16, W, `sentence should be 5–16 words (has ${wc})`);
+  guard(W + ' word', e[0]); guard(W + ' sentence', e[3]);
+});
+
+// ---------- sentence building: English idea + hints → say the whole sentence ----------
+const PATS = ['did', 'used to', 'have been doing lately', 'had done', 'would', 'if I were', 'that I', 'for me to', 'hei de', 'will', 'pronouns', 'passive', 'slips'];
+const bIds = new Set();
+BUILD.forEach((b, n) => {
+  const W = `build[${n}] ${b.id}`;
+  check(typeof b.id === 'string' && b.id && !bIds.has(b.id), W, 'missing or duplicate id'); bIds.add(b.id);
+  check(typeof b.en === 'string' && b.en.trim(), W, 'en missing');
+  check(['A2', 'B1'].includes(b.lvl), W, `lvl must be A2 or B1 (got ${b.lvl})`);
+  check(VTHEMES.concat(['daily', 'errands', 'work', 'class']).includes(b.topic), W, `topic not allowed: ${b.topic}`);
+  check(PATS.includes(b.pat), W, `pat must be one of ${PATS.join(' / ')} (got ${b.pat})`);
+  check(Array.isArray(b.hints) && b.hints.length >= 2 && b.hints.length <= 3 && b.hints.every(h => typeof h === 'string' && h.trim()), W, 'needs 2–3 Portuguese word hints');
+  check(Array.isArray(b.a) && b.a.length && b.a.every(x => typeof x === 'string' && x.trim()), W, 'a[] missing');
+  if (b.a && b.a[0]) { const wc = words(b.a[0]); check(wc >= 5 && wc <= 16, W, `model should be 5–16 words (has ${wc})`); }
+  check(Array.isArray(b.mark) && b.mark.length > 0, W, 'mark[] missing');
+  (b.mark || []).forEach(m => check(hasWord((b.a || [''])[0], m), W, `mark "${m}" not found as a whole word in "${(b.a || [''])[0]}"`));
+  check(typeof b.why === 'string' && b.why.trim() && b.why.length <= 140, W, `why missing or over 140 chars`);
+  if (b.t !== undefined) check(!!Conj.TENSE[b.t], W, `t not a tense key: ${b.t}`);
+  (b.a || []).forEach(x => guard(W + ' a', x)); (b.hints || []).forEach(h => guard(W + ' hint', h));
+});
+
 // ---------- totals and coverage (full run only) ----------
 if (!partial) {
   check(TRANSFORM.length >= 70, 'transform', `at least 70 items needed (has ${TRANSFORM.length})`);
@@ -224,7 +271,12 @@ if (!partial) {
   const ctargets = CONVERSAS.map(c => c.target.toLowerCase()).join(' | ');
   ['did', 'used to', 'have been doing lately', 'would', 'that i', 'will', 'if i were'].forEach(p => check(ctargets.includes(p), 'conversa coverage', `no conversation targets "${p}"`));
   check(MISSIONS.length >= 36, 'missions', `at least 36 missions needed (has ${MISSIONS.length})`);
+  check(TOPIC_VOCAB.length >= 150, 'topic vocab', `at least 150 topic words needed (has ${TOPIC_VOCAB.length})`);
+  VTHEMES.forEach(t => check(TOPIC_VOCAB.filter(e => e[5] === t).length >= 15, 'topic vocab', `theme "${t}" needs at least 15 words`));
+  check(BUILD.length >= 140, 'build', `at least 140 sentence-building items needed (has ${BUILD.length})`);
+  PATS.forEach(p => check(BUILD.filter(b => b.pat === p).length >= 6, 'build coverage', `pattern "${p}" needs at least 6 items`));
   const nLines = DIALOGUES.reduce((a, d) => a + d.lines.length, 0);
+  console.log(`${TOPIC_VOCAB.length} topic words · ${BUILD.length} sentence-building items`);
   console.log(`${CONVERSAS.length} conversations, ${CONVERSAS.reduce((a, c) => a + c.nodes.length, 0)} questions · ${MISSIONS.length} missions`);
   console.log(`${TRANSFORM.length} transformation items (${lv('A2')} A2, ${lv('B1')} B1), ${nTr} transformations · ${DIALOGUES.length} dialogues, ${nLines} lines`);
 }

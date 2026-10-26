@@ -16,6 +16,7 @@
     'Set your phone to Português (Portugal) for a week. You already know where everything is.',
   ];
   const dayIndex = () => Math.floor((Date.now() - new Date(2026, 0, 1)) / P.DAY);
+  P.dayIndex = dayIndex;
 
   // ======================= TODAY =======================
   V.today = function (el) {
@@ -26,27 +27,15 @@
     const greet = hr < 12 ? 'Bom dia' : hr < 20 ? 'Boa tarde' : 'Boa noite';
     const prompt = PROMPTS[dayIndex() % PROMPTS.length];
     const first = !Object.keys(s.cards).length && !Object.keys(s.conj).length;
-    const items = [
-      { done: reviewsDone || (due + fresh === 0 && (d.rev || 0) > 0), t: 'Reviews', d: due + fresh ? `${due} due · ${fresh} new` : ((d.rev || 0) ? `${d.rev} done today` : 'nothing due'), href: '#/review', go: 'rv-start', btn: due + fresh ? 'Start' : 'Open' },
-      { done: (d.sprints || 0) > 0, t: 'Verb sprint', d: `${s.settings.sprintLen} quick forms · ${s.settings.tenses.map(k => Conj.TENSE[k].pt.replace('Pretérito ', '')).join(', ')}`, href: '#/gym', go: 'gym-start', btn: 'Start' },
-      { done: (d.drillSessions || 0) > 0, t: 'Context drill', d: 'Pick the right tense in real sentences', href: '#/drills', go: 'drill-start', btn: 'Start' },
-      { done: (d.trans || 0) > 0, t: 'Transformations', d: `Hear it, then say it changed · today: <b>${esc(Conj.label(P.focusTense()))}</b>`, href: '#/transform', go: 'tr-start', btn: 'Start' },
-      // the app alternates a dialogue and a conversation day by day
-      dayIndex() % 2 ? { done: (d.dialog || 0) + (d.conv || 0) > 0, t: 'Conversation', d: 'Answer out loud about your life, then compare', href: '#/conversas', go: 'cv-suggest', btn: 'Start' }
-        : { done: (d.dialog || 0) + (d.conv || 0) > 0, t: 'Dialogue', d: 'Minus one: play your part out loud', href: '#/dialogues', btn: 'Open' },
-      { done: (d.write || 0) > 0, t: 'Say or write it', d: esc(prompt.pt), href: '#/write', btn: 'Open' },
-    ];
-    const doneCount = items.filter(i => i.done).length;
+    const prog = P.planProgress();
     el.innerHTML = `
       <div class="hero"><div><div class="muted small">${new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}</div><h1>${greet}, ${esc(s.settings.name || '')}!</h1></div>
-        <div class="row"><span class="badge acc">🔥 ${P.streak()} day streak</span><span class="badge">${doneCount}/${items.length} today</span></div></div>
+        <div class="row"><span class="badge acc">🔥 ${P.streak()} day streak</span><span class="badge">${prog.done}/${prog.total} today</span></div></div>
       ${first ? `<div class="card" style="border-color:var(--accent)"><h2>Bem-vindo 👋</h2>
-        <p>Here's how to use this: <b>20–30 minutes a day</b>, top to bottom. Reviews first (spaced repetition), then a verb sprint, a context drill, and one thing you say or write. Add what you learn in class under <b>Capture</b>, and give your partner the <b>Partner</b> tab.</p>
+        <p>Here's how to use this: two blocks of about <b>30 minutes</b>, a morning one for fundamentals and an evening one for speaking. Tap <b>Start</b> and the app walks you from one activity to the next. Short on time? <b>5 min</b> runs a quick verb drill on today's focus. Add what you learn in class under <b>Capture</b>.</p>
         <p class="small muted">Everything is saved on this device. ${Store.fsSupported() ? 'On this computer you can also link a save file in your Portuguese folder (Settings → Save file).' : 'Use Settings → Backup to export a save file now and then.'}</p></div>` : ''}
       ${P.Drive.connected() && P.Drive.state.status === 'needsAuth' ? `<div class="card" style="border-color:var(--warn)"><div class="row between"><span>Sync with Google Drive before you start, so you have your latest progress.</span><button class="btn sm primary" data-act="drive-sync">${ICON.cloud} Sync</button></div></div>` : ''}
-      <div class="card"><h2>Hoje</h2><ul class="plan">${items.map(i => `<li class="${i.done ? 'done' : ''}">
-        <span class="check">${ICON.check}</span><div class="grow"><div class="t">${i.t}</div><div class="d">${i.d}</div></div>
-        <a class="btn sm ${i.done ? '' : 'primary'}" href="${i.href}" ${i.go ? `data-go="${i.go}"` : ''}>${i.done ? 'Again' : i.btn}</a></li>`).join('')}</ul></div>
+      ${P.planHTML()}
       <div class="grid two"><a class="card radio-cta" href="#/radio">${ICON.radio}<span>Going out? <b>Radio mode</b> turns a walk or ride into drill time.</span></a>
         <a class="card radio-cta" href="#/missoes">${ICON.mission}<span><b>Missões</b> this week: ${P.missionsWeekDone ? P.missionsWeekDone() : 0}/3 done</span></a></div>
       <div class="grid two">
@@ -187,7 +176,7 @@
   act['w-save'] = () => {
     const t = document.getElementById('wtext').value.trim(); if (!t) { P.toast('Write something first 🙂'); return; }
     const s = S(); s.journal.unshift({ id: P.uid(), date: Date.now(), prompt: PROMPTS[WP].pt, text: t }); s.draft = null;
-    P.bump('write'); Store.change(); P.toast('Guardado! Now read it out loud.');
+    P.bump('write'); Store.change(); P.toast('Guardado! Now read it out loud.'); if (P.stepDone) P.stepDone('write');
   };
 
   // ======================= GRAMMAR =======================
@@ -207,7 +196,7 @@
   act['g-open'] = (b) => { GR = b.dataset.k; P.render(); window.scrollTo(0, 0); };
   act['g-back'] = () => { GR = null; P.render(); };
   act['g-drill'] = (b) => { GR = null; P.startDrill(b.dataset.k); };
-  act['g-gym'] = (b) => { const k = b.dataset.k; S().settings.tenses = [k]; Store.change({ silent: true }); GR = null; location.hash = '#/gym'; };
+  act['g-gym'] = (b) => { const k = b.dataset.k; S().settings.tenses = [k]; Store.change({ silent: true }); GR = null; location.hash = '#/sprint'; };
 
   // ======================= CAPTURE =======================
   let capType = 'word';

@@ -82,10 +82,11 @@
     if (!RS.spoken && S().settings.autoplay && ((c.type === 'self' && !revealed) || (c.sayAfter && revealed))) { RS.spoken = true; TTS.speak(c.say); }
   };
   function reviewDone(el) {
+    if (P.stepDone) P.stepDone('review');
     const mins = Math.max(1, Math.round((Date.now() - RS.start) / 60000));
     el.innerHTML = `<div class="study"><div class="card" style="text-align:center">
       <h1>Feito! 🎉</h1><p class="muted">${RS.graded} cards in ${mins} min${RS.again ? ` · ${RS.again} to see again soon` : ''}.</p>
-      <div class="row" style="justify-content:center"><a class="btn primary" href="#/today">Back to today</a><a class="btn" href="#/gym">Verb sprint</a></div></div></div>`;
+      <div class="row" style="justify-content:center"><a class="btn primary" href="#/today">Back to today</a><a class="btn" href="#/gym">Verbs</a></div></div></div>`;
     RS = null;
   }
   function next() { RS.i++; RS.phase = 'front'; RS.result = null; RS.typed = ''; RS.spoken = false; RS.showHint = false; }
@@ -161,7 +162,8 @@
     do { c = P.pickWeighted(cands, gymWeight); guard++; } while (last && c.v === last.v && guard < 6);
     return { v: c.v, t: c.t, p: c.persons[Math.floor(Math.random() * c.persons.length)] };
   };
-  V.gym = function (el) {
+  // The typed sprint lives at #/sprint; Verbos (#/gym) is the speak-first drill in views-verbs.js.
+  V.sprint = function (el) {
     const st = S().settings;
     if (!GS) {
       const cands = gymCandidates();
@@ -230,7 +232,7 @@
     P.bump('sprints'); Store.change({ silent: true });
     GS = null;
   }
-  function startGym(items) { GS = { items, i: 0, ok: 0, done: 0, times: [], misses: [], log: [], result: null, typed: '' }; if (!items) { GS.items = P.takeFlagged(['verb'], S().settings.sprintLen).filter(d => P.VERB[d.v] && P.VERB[d.v].f[d.t] && P.VERB[d.v].f[d.t][d.p]).map(d => ({ v: d.v, t: d.t, p: d.p })); if (GS.items.length) Store.change({ silent: true }); for (let k = GS.items.length; k < S().settings.sprintLen; k++) { const n = gymNext(); if (!n) break; GS.items.push(n); GS.last = n; } } P.render(); }
+  function startGym(items) { GS = { items, i: 0, ok: 0, done: 0, times: [], misses: [], log: [], result: null, typed: '' }; if (!items) { GS.items = P.takeFlagged(['verb'], S().settings.sprintLen).filter(d => P.VERB[d.v] && P.VERB[d.v].f[d.t] && P.VERB[d.v].f[d.t][d.p]).map(d => ({ v: d.v, t: d.t, p: d.p })); if (GS.items.length) Store.change({ silent: true }); for (let k = GS.items.length; k < S().settings.sprintLen; k++) { const n = gymNext(); if (!n) break; GS.items.push(n); GS.last = n; } } if (P.route() !== 'sprint') history.pushState(null, '', '#/sprint'); P.render(); }
   act['gym-start'] = () => startGym();
   act['gym-again'] = () => startGym();
   act['gym-focus'] = (b) => {
@@ -262,7 +264,7 @@
     Store.change({ silent: true }); P.render();
   }
   act['gym-next'] = () => { GS.i++; GS.result = null; GS.typed = ''; GS.t0 = 0; P.render(); };
-  P.keys.gym = (e) => {
+  P.keys.sprint = (e) => {
     if (!GS || GS.i >= GS.items.length) return;
     if (e.key === 'Enter') { e.preventDefault(); if (GS.result) act['gym-next'](); else gymCheck(); }
   };
@@ -333,6 +335,7 @@
     const input = el.querySelector('#ans'); if (input && DS.phase === 'type') setTimeout(() => input.focus(), 20);
   };
   function drillSummary(el) {
+    if (P.stepDone) P.stepDone('drill');
     const acc = Math.round(DS.ok / Math.max(1, DS.done) * 100);
     el.innerHTML = `<div class="study"><div class="card" style="text-align:center"><h1>Feito!</h1>
       <p class="muted">${DS.ok}/${DS.done} fully right (${acc}%). Choice correct: ${DS.choiceOk}/${DS.done}.</p>
@@ -365,14 +368,15 @@
 
   // ======================= VERB TABLES =======================
   let tableVerb = 'fazer', tableQ = '';
+  P.showTable = v => { if (P.VERB[v]) tableVerb = v; tableQ = ''; if (P.route() !== 'tables') location.hash = '#/tables'; else P.render(); };
   V.tables = function (el) {
     const list = VERBS.filter(v => !tableQ || v.v.includes(tableQ) || v.en.toLowerCase().includes(tableQ.toLowerCase()));
     const vb = P.VERB[tableVerb];
-    el.innerHTML = `<div class="hero"><div><h1>Verb tables</h1><div class="muted">All ${VERBS.length} verbs, every tense. Tap a form to hear it.</div></div><a class="btn" href="#/gym">Back to sprints</a></div>
+    el.innerHTML = `<div class="hero"><div><h1>Verb tables</h1><div class="muted">All ${VERBS.length} verbs, every tense. Tap a form to hear it.</div></div><a class="btn" href="#/gym">Back to verbs</a></div>
       <div class="card"><input type="text" id="tq" placeholder="Search verbs (pt or en)…" value="${esc(tableQ)}">
         <div class="chips" style="margin-top:10px;max-height:140px;overflow:auto">${list.map(v => `<button class="chip ${v.v === tableVerb ? 'on' : ''}" data-act="tbl-verb" data-k="${esc(v.v)}">${esc(v.v)}</button>`).join('')}</div></div>
       <div class="card"><div class="row between"><div><h2 style="margin:0">${esc(tableVerb)}</h2><div class="muted small">${esc(vb.def.en)} · particípio: <b>${esc(vb.f.part)}</b></div></div>
-        <button class="btn sm" data-act="gym-focus" data-k="${esc(tableVerb)}">Drill this verb</button></div>
+        <button class="btn sm" data-act="vd-focus" data-k="${esc(tableVerb)}">Drill this verb</button></div>
         <div class="tablewrap" style="margin-top:12px"><table><tr><th></th>${[0, 1, 2, 3, 4].map(p => `<th>${['eu', 'tu', 'ele/você', 'nós', 'eles/vocês'][p]}</th>`).join('')}</tr>
         ${Conj.TENSES.map(t => `<tr><td><b>${esc(t.pt)}</b><div class="tiny">${esc(t.lvl)}</div></td>${[0, 1, 2, 3, 4].map(p => { const x = vb.f[t.k][p]; return `<td>${x ? `<a href="#" data-act="say" data-say="${esc(x)}">${esc(x)}</a>` : '<span class="tiny">–</span>'}</td>`; }).join('')}</tr>`).join('')}</table></div>
         <p class="tiny" style="margin-top:8px">Imperativo shows tu (affirmative), você and vocês. Negative commands use the conjuntivo: não fales, não comas.</p></div>`;

@@ -100,6 +100,7 @@
     const x = S().conv[CV.id] || { runs: 0, last: 0, rating: 0 };
     x.runs++; x.last = now(); x.rating = +b.dataset.g; S().conv[CV.id] = x;
     P.bump('conv'); CV.rated = true; Store.change({ silent: true }); P.render();
+    if (P.stepDone) P.stepDone('talk');
   };
   P.keys.conversas = e => {
     if (!CV || !keyOk(e)) return;

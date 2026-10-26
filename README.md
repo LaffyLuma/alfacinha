@@ -82,7 +82,9 @@ When you get a new version, upload the changed files to the same GitHub repo. Ke
 
 | Section | What it does |
 |---|---|
-| **Hoje** | Daily plan: reviews, a verb sprint, a context drill, transformations, a dialogue, and one speaking/writing prompt |
+| **Hoje** | The planner: today's focus (rotates by weekday, swaps to your weakest pattern when you already know it), a morning block (reviews, verbs, transformations, context drill) and an evening block (conversation, sentences, say/write, ritmo), ~30 min each, run one after another with a session bar. **5 min** = a quick verb drill on today's focus |
+| **Verbos** | Speak-first: hear the cue ("ontem, eu, fazer"), say the form, reveal, grade. Irregular forms marked ★, the surprising part underlined; endings coloured by pattern. The typed sprint is still there for the PC |
+| **Verb lookup** (book button, top bar) | Verbo rápido: the form you need, that pattern down the persons, that person across this week's patterns. Opens on what you're drilling; peeking mid-question counts as Slow |
 | **Falar → Transformar** | Hear a sentence, then say it changed (another person, another tense, a question, negative, pronoun, polite, passive, reported). Reveal, hear it, grade yourself. 72 sentences, 299 changes. No typing |
 | **Falar → Diálogos** | 24 minus-one dialogues in two voices: listen, then play Ryan's part (or the other person's) out loud. Flag a line to add it to your reviews |
 | **Falar → Conversas** | 16 conversations about your life: the app asks, you answer out loud, then see model answers and a short check list; one tap on what you said picks the next question |

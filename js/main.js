@@ -13,7 +13,7 @@
   P.route = route;
 
   function renderChrome(r) {
-    const rr = r === 'tables' ? 'gym' : r;
+    const rr = r === 'tables' || r === 'sprint' ? 'gym' : r;
     const tr = ['transform', 'dialogues', 'radio', 'conversas', 'ritmo', 'missoes'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
     document.getElementById('sidebar').innerHTML = `<a class="brand" href="#/today"><span class="brand-mark">A</span>Alfacinha</a>` +
       NAV.map(n => n[0] === 'sep' ? '<div class="sep"></div>' : `<a class="nav ${rr === n[0] ? 'on' : ''}" href="#/${n[0]}">${ICON[n[2]]}${n[1]}</a>`).join('');
@@ -25,7 +25,7 @@
     const dcls = dcon ? ({ ok: '', syncing: '', needsAuth: 'warn', offline: 'warn', error: 'warn' }[D.state.status] || '') : '';
     const drivePill = dcon ? `<button class="savepill drivepill ${dcls}" data-act="drive-sync" title="${esc(D.state.error || 'Google Drive sync: tap to sync now')}">${ICON.cloud}${esc(D.statusText())}</button>` : '';
     document.getElementById('topbar').innerHTML = `<a class="brand" href="#/today"><span class="brand-mark">A</span>Alfacinha</a>
-      <div class="row" style="gap:12px">${due ? `<a class="badge acc" href="#/review" style="text-decoration:none">${due} due</a>` : ''}
+      <div class="row" style="gap:12px"><button class="iconbtn" data-act="vpanel" title="Look up a verb" aria-label="Look up a verb">${ICON.verbs}</button>${due ? `<a class="badge acc" href="#/review" style="text-decoration:none">${due} due</a>` : ''}
       ${drivePill || (fs.needsPermission ? `<button class="btn sm" data-act="file-reconnect">Reconnect save file</button>` : `<span class="savepill ${fs.error ? 'warn' : ''}" title="${esc(fs.error || '')}"><span class="dot"></span>${fs.linked ? 'Saved to ' + esc(fs.name) : 'Saved on this device'}</span>`)}</div>`;
   }
   P.renderChrome = () => renderChrome(route());
@@ -40,6 +40,7 @@
     leaveRoute(r);
     const view = P.views[r] || P.views.today;
     renderChrome(r);
+    if (P.drawSessionBar) P.drawSessionBar();
     const el = document.getElementById('view');
     view(el);
     if (r !== lastRoute) { window.scrollTo(0, 0); lastRoute = r; }

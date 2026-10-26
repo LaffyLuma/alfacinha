@@ -9,7 +9,7 @@
   // Pattern label first, the Portuguese term small and muted
   const patHTML = k => `${esc(Conj.label(k))} <span class="tiny term">${esc(Conj.TENSE[k].pt)}</span>`;
   // How a pattern label sounds when read out by an English voice (radio)
-  const SPOKEN = { pres: 'now', pps: 'did', pimp: 'was doing, or used to', ppc: 'have been doing lately', imp: 'command', fut: 'will', cond: 'would',
+  const SPOKEN = { pres: 'now', pps: 'did', pimp: 'was doing, or used to', ppc: 'have been doing lately', mqp: 'had done', imp: 'command', fut: 'will', cond: 'would',
     cpres: 'that I', cimp: 'if I were', cfut: 'when I will have', infp: 'for me to', hav: 'I\'ll make sure I' };
   const keyOk = e => !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName));
   const firstPerson = (t, p) => P.personLabel(t, p).split(' / ')[0];
@@ -48,6 +48,7 @@
     ['pron', 'pronouns', (it, x) => x.kind === 'pronoun'],
     ['q', 'questions', (it, x) => x.kind === 'question'],
     ['slips', 'my slips', it => it.topic === 'slips'],
+    ['passive', 'passive', (it, x) => x.kind === 'passive'],
   ];
   let TS = null, trFocus = 'all';
   const trKey = (id, idx) => id + '|' + idx;
@@ -169,6 +170,7 @@
       <div class="row" style="margin-top:18px"><button class="btn primary" data-act="tr-again">Again</button><a class="btn" href="#/today">Today</a></div>
     </div></div>`;
     P.bump('transSessions'); Store.change({ silent: true });
+    if (P.stepDone) P.stepDone('trans');
     TS = null;
   }
   function trNext() { TS.i++; TS.phase = 'listen'; TS.spoken = false; TS.hint = false; P.render(); }
@@ -178,6 +180,8 @@
     Store.change({ silent: true }); P.render();
   };
   act['tr-again'] = act['tr-start'];
+  // Start a session straight away with a focus chip (the planner uses this)
+  P.startTransform = f => { trFocus = FOCUS.some(x => x[0] === f) ? f : 'all'; act['tr-start'](); };
   act['tr-reveal'] = () => {
     if (!TS || TS.phase === 'reveal') return;
     TTS.stop(); TS.phase = 'reveal'; P.render();
@@ -366,6 +370,7 @@
     const x = S().dialog[DG.id] || { passes: 0, last: 0, rating: 0 };
     x.passes++; x.last = now(); x.rating = +b.dataset.g; S().dialog[DG.id] = x;
     P.bump('dialog'); DG.rated = true; Store.change({ silent: true }); P.render();
+    if (P.stepDone) P.stepDone('talk');
   };
   P.keys.dialogues = (e) => {
     if (!DG || !keyOk(e)) return;

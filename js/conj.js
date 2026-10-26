@@ -7,6 +7,7 @@
     { k: 'pps', pt: 'Pretérito perfeito', en: 'Simple past (completed)', lvl: 'A2', pat: 'did' },
     { k: 'pimp', pt: 'Pretérito imperfeito', en: 'Imperfect (was -ing / used to)', lvl: 'A2', pat: 'was doing / used to' },
     { k: 'ppc', pt: 'Pretérito perfeito composto', en: 'Have been -ing lately (tenho + particípio)', lvl: 'A2', pat: 'have been doing lately' },
+    { k: 'mqp', pt: 'Mais-que-perfeito composto', en: 'Had done (tinha + particípio)', lvl: 'B1', pat: 'had done' },
     { k: 'imp', pt: 'Imperativo', en: 'Commands (tu / você / vocês)', lvl: 'A2', pat: 'command' },
     { k: 'fut', pt: 'Futuro', en: 'Future (will)', lvl: 'B1', pat: 'will' },
     { k: 'cond', pt: 'Condicional', en: 'Conditional (would)', lvl: 'B1', pat: 'would' },
@@ -28,6 +29,7 @@
   const FUT = ['ei', 'ás', 'á', 'emos', 'ão'];
   const COND = ['ia', 'ias', 'ia', 'íamos', 'iam'];
   const TER = ['tenho', 'tens', 'tem', 'temos', 'têm'];
+  const TINHA = ['tinha', 'tinhas', 'tinha', 'tínhamos', 'tinham'];
   const HAV = ['hei de', 'hás de', 'há de', 'havemos de', 'hão de'];
 
   // spelling: -ar stem before e
@@ -116,6 +118,7 @@
     // particípio
     f.part = o.part || (stem + (type === 'ar' ? 'ado' : 'ido'));
     f.ppc = TER.map(t => t + ' ' + f.part);
+    f.mqp = TINHA.map(t => t + ' ' + f.part); // had done
     // infinitivo pessoal: sair → saíres/saírem (hiatus í), pôr → pores
     const base = v.replace('ô', 'o');
     const acc = /[aeiou]ir$/.test(v) && !/[gq]uir$/.test(v) ? base.slice(0, -2) + 'ír' : base;
@@ -128,7 +131,7 @@
     // impersonal verbs
     if (def.persons) {
       f.imp = [null, null, null, null, null];
-      for (const k of ['pres', 'pps', 'pimp', 'fut', 'cond', 'cpres', 'cimp', 'cfut', 'ppc', 'infp', 'hav']) {
+      for (const k of ['pres', 'pps', 'pimp', 'fut', 'cond', 'cpres', 'cimp', 'cfut', 'ppc', 'mqp', 'infp', 'hav']) {
         f[k] = f[k].map((x, p) => def.persons.includes(p) ? x : null);
       }
     }

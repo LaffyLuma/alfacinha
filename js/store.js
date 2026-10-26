@@ -8,6 +8,7 @@
     tenses: ['pres', 'pps', 'pimp'], verbSets: ['irr', 'stem', 'reg'], persons: [0, 1, 2, 3, 4], sprintLen: 20,
     drillSets: ['past', 'ppc', 'serestar'], drillLen: 10, chunkEvery: 4,
     transLen: 12, radioGap: 4, radioLen: 15, radioMix: ['verbs', 'trans', 'dialog', 'vocab'],
+    sayTenses: [], saySets: ['irr', 'stem', 'reg'], sayLen: 20, // speak-first verb drill; [] = every pattern
   };
   function fresh() {
     return { v: 1, created: Date.now(), updated: Date.now(), settings: Object.assign({}, DEFAULT_SETTINGS),
