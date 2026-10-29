@@ -21,6 +21,7 @@
       ritmo: { loop: {}, bpm: {}, last: 0 }, // loop: sentence key → best tempo (rate); bpm: tense → best BPM held
       missions: {},   // missionId → { done, phrase } (done = time completed)
       build: {},      // sentence building: itemId → { n, ok, ema, last }
+      aula: {},       // linking-words drill (Aula): itemId → { n, ema, last }
       reading: [], readCur: '',
       fun: { win: {}, pb: {}, bosses: {}, km: 0 } }; // guided session: time windows, personal bests, bosses, N2 km // reading log sessions { id, date, book, pages, mins }; the book you're on now (per device)
   }
@@ -163,6 +164,7 @@
     const rm = (p, q) => { const o = Object.assign({}, p || {}); for (const [k, v] of Object.entries(q || {})) o[k] = Math.max(o[k] || 0, v); return o; };
     out.ritmo = { loop: rm(a.ritmo.loop, b.ritmo.loop), bpm: rm(a.ritmo.bpm, b.ritmo.bpm), last: Math.max(a.ritmo.last || 0, b.ritmo.last || 0) };
     for (const [k, x] of Object.entries(b.build)) { const y = out.build[k]; if (!y || (x.n || 0) > (y.n || 0)) out.build[k] = x; }
+    for (const [k, x] of Object.entries(b.aula)) { const y = out.aula[k]; if (!y || (x.n || 0) > (y.n || 0)) out.aula[k] = x; }
     const fa = a.fun || {}, fb = b.fun || {};
     const mx = (p, q) => { const o = Object.assign({}, p || {}); for (const [k, v] of Object.entries(q || {})) o[k] = Math.max(o[k] || 0, v); return o; };
     const bosses = Object.assign({}, fa.bosses || {}); for (const [k, x] of Object.entries(fb.bosses || {})) { const y = bosses[k]; bosses[k] = !y ? x : { tries: Math.max(y.tries || 0, x.tries || 0), beaten: y.beaten || x.beaten }; }
@@ -208,13 +210,14 @@
     for (const [k, c] of Object.entries(x.conv)) if ((c.last || 0) < R) delete x.conv[k];
     for (const [k, c] of Object.entries(x.missions)) if ((c.done || 0) < R) delete x.missions[k];
     for (const [k, c] of Object.entries(x.build)) if ((c.last || 0) < R) delete x.build[k];
+    for (const [k, c] of Object.entries(x.aula)) if ((c.last || 0) < R) delete x.aula[k];
     if ((x.ritmo.last || 0) < R) x.ritmo = { loop: {}, bpm: {}, last: 0 };
     const rk = new Date(R); const rkey = `${rk.getFullYear()}-${String(rk.getMonth() + 1).padStart(2, '0')}-${String(rk.getDate()).padStart(2, '0')}`;
     for (const k of Object.keys(x.days)) if (k < rkey) delete x.days[k];
     x.journal = x.journal.filter(j => j.date >= R); x.reading = (x.reading || []).filter(j => j.date >= R); x.partnerLog = x.partnerLog.filter(j => j.date >= R);
   }
   // A compact fingerprint of the learning data, used to tell whether a merge actually changed anything.
-  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions, x.build, x.reading.length, x.fun]); }
+  function fingerprint(x) { return JSON.stringify([x.cards, x.notes, x.conj, x.drills, x.days, x.journal.length, x.partnerLog.length, x.deleted, x.resetAt, x.trans, x.dialog, x.radio, x.conv, x.ritmo, x.missions, x.build, x.aula, x.reading.length, x.fun]); }
   function validate(obj) { return obj && typeof obj === 'object' && obj.v && obj.cards && obj.settings; }
 
   const api = { load, get, change, flush, onChange, onAnyChange, replace, fingerprint, fresh, merge, radioKey, validate, exportBlob,

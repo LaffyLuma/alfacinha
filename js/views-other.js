@@ -367,7 +367,7 @@
 
   // ======================= MORE (mobile menu) =======================
   V.more = function (el) {
-    const items = [['drills', 'Context drills', 'Perfeito vs imperfeito, ser/estar, conjuntivo'], ['ler', 'Ler e ouvir', 'Reading log, books, music, lyric → card'], ['partner', 'Português a dois', 'Conversation cards and timer for you and your partner'], ['write', 'Escrever', 'Daily speaking & writing prompt'], ['grammar', 'Gramática', 'Short notes + linked drills'], ['capture', 'Capture', 'Add words from class or life'], ['tables', 'Verb tables', 'Every verb, every tense'], ['progress', 'Progresso', 'Stats, verb mastery'], ['settings', 'Definições', 'Save file, backup, voice']];
-    el.innerHTML = `<h1>Mais</h1><div class="card menu">${items.map(([k, t, d]) => `<a href="#/${k}">${ICON[k === 'drills' ? 'drills' : k === 'tables' ? 'table' : k === 'ler' ? 'grammar' : k]}<span>${t}<small>${d}</small></span></a>`).join('')}</div>`;
+    const items = [['drills', 'Context drills', 'Perfeito vs imperfeito, ser/estar, conjuntivo'], ['ler', 'Ler e ouvir', 'Reading log, books, music, lyric → card'], ['aula', 'Aula', 'Linking words & had done · what class is doing'], ['partner', 'Português a dois', 'Conversation cards and timer for you and your partner'], ['write', 'Escrever', 'Daily speaking & writing prompt'], ['grammar', 'Gramática', 'Short notes + linked drills'], ['capture', 'Capture', 'Add words from class or life'], ['tables', 'Verb tables', 'Every verb, every tense'], ['progress', 'Progresso', 'Stats, verb mastery'], ['settings', 'Definições', 'Save file, backup, voice']];
+    el.innerHTML = `<h1>Mais</h1><div class="card menu">${items.map(([k, t, d]) => `<a href="#/${k}">${ICON[k === 'drills' ? 'drills' : k === 'tables' ? 'table' : k === 'ler' || k === 'aula' ? 'grammar' : k]}<span>${t}<small>${d}</small></span></a>`).join('')}</div>`;
   };
 })(Pois);

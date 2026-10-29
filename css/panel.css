@@ -46,3 +46,14 @@ html.vp-open, html.vp-open body { overflow: hidden; }
 .vp-more .vp-list { margin-top: 6px; }
 .vp-foot { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px; }
 .vp-foot .btn { flex: 1; min-height: 48px; }
+
+/* Linking words tab (Aula) */
+.vp-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+.vp-tab { min-height: 44px; border: 1px solid var(--line); background: var(--surface); border-radius: 11px; font-weight: 650; cursor: pointer; color: var(--ink-2); }
+.vp-tab.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.vp-conn { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.vp-conn:hover { border-color: var(--accent); }
+.vp-conn-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.vp-conn-top b { font-size: 1.05rem; }
+.vp-conn-ex { font-size: .98rem; }
+.vp-conn-ex svg { color: var(--ink-3); }

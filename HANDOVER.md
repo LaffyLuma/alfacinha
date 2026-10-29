@@ -34,3 +34,10 @@ Read `CLAUDE.md` first (architecture table, conventions, state keys). This file 
 
 ## 26 Oct, later: content volume (pois-v12)
 +287 everyday phrases (reactions, small talk, opinions, plans, texting/WhatsApp, phone, feelings, time, help, fillers → `CHUNKS2` now 432), +200 verb sentences on the slow tenses (`vc_*`: would / if I were / "that I…" / when-future / for me to / had done; `vd_*`: did / used to / lately / hei de / will → `VERBSENT` now 361), +12 branching conversations (`c_*` → 28). Proofread by two fresh agents. After this, the director asked to PAUSE and wait for Ryan's feedback from real use on the phone.
+
+## 29 Oct: "Aula" (linking words + had done) — LIVE pois-v13
+Ryan sent photos of his B1 handouts (aulas on mais-que-perfeito, conjuntivo, concessão, tempo, condição, conjuntivo vs infinitivo pessoal, role-plays). Ask: more drills, explainers, walkthroughs, verb tables, quick access; grammar names visible but small, plain English first. Use handouts as a topic guide only (never copy text, never the course link/password).
+- Working style now: main chat = director; helpers do the work (Sonnet for build/content), max 3 at once; check results before telling Ryan; very short replies. Notes live here.
+- Jobs: (A) `data/_parts/connect_a.js` → `data/connect.js` (`CONNECT_TOPICS` 7 topics: opin, conc, tempo, cond, fim, pairs, past; `CONNECT` ~170 speak-first items, gap/join) + `--connect` test; (B) `data/_parts/conversas_d.js`: 11 class role-plays (`d_*`: course info, doctor, restaurant, bank, lost luggage, hotel, landlord, gym, IKEA kitchen, job interview, rescheduling); (C) `js/views-aula.js` `#/aula` hub/topic/drill + verb tables, panel "Linking words" tab, session `connect` kind, state `aula`.
+- Done: merged (CONNECT 174, CONVERSAS 39), proofread by a fresh agent, director fixed 3 same-subject que-items (same subject → infinitive), 375 px checked, shipped pois-v13. Waiting on Ryan's feedback from using Aula.
+- Settled: "Marta" is a textbook name in his handouts (Marta e Carlos), not a classmate concern.

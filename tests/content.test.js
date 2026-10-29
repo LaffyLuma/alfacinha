@@ -8,7 +8,8 @@
      node tests/content.test.js --topicvocab path/to/part.js
      node tests/content.test.js --build path/to/part.js
      node tests/content.test.js --chunks path/to/part.js
-     node tests/content.test.js --verbsent path/to/part.js */
+     node tests/content.test.js --verbsent path/to/part.js
+     node tests/content.test.js --connect path/to/part.js */
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const args = process.argv.slice(2);
@@ -22,6 +23,7 @@ const vPath = argOf('--topicvocab') || (partial ? null : path.join(ROOT, 'data',
 const bPath = argOf('--build') || (partial ? null : path.join(ROOT, 'data', 'build.js'));
 const fs = require('fs');
 const chPath = argOf('--chunks') || (partial ? null : path.join(ROOT, 'data', 'chunks2.js'));
+const cnPath = argOf('--connect') || (partial ? null : path.join(ROOT, 'data', 'connect.js'));
 const vsPath = argOf('--verbsent') || (partial ? null : path.join(ROOT, 'data', 'verbsent.js'));
 
 const Conj = require(path.join(ROOT, 'js', 'conj.js'));
@@ -39,6 +41,8 @@ const TOPIC_VOCAB = vPath ? (require(vPath).VOCAB_TOPIC || []) : [];
 const BUILD = bPath ? require(bPath).BUILD : [];
 const BASE_CHUNKS = (() => { const g = {}; new Function('g', fs.readFileSync(path.join(ROOT, 'data', 'chunks.js'), 'utf8').replace(/\bvar CHUNKS\b/, 'g.CHUNKS').replace(/if \(typeof module[^\n]*/g, ''))(g); return g.CHUNKS || []; })();
 const CHUNKS2 = chPath && fs.existsSync(chPath) ? require(chPath).CHUNKS2 : [];
+const CN = cnPath && fs.existsSync(cnPath) ? require(cnPath) : { CONNECT_TOPICS: [], CONNECT: [] };
+const CONNECT_TOPICS = CN.CONNECT_TOPICS || [], CONNECT = CN.CONNECT || [];
 const VERBSENT = vsPath && fs.existsSync(vsPath) ? require(vsPath).VERBSENT : [];
 
 let fails = 0, checks = 0;
@@ -280,6 +284,51 @@ VERBSENT.forEach((x, n) => {
   guard(W, String(x.s || '').replace(/[{}]/g, ''));
 });
 
+// ---------- linking words (conectores) and "had done": topics + speak-first items ----------
+const CN_IDS = ['opin', 'conc', 'tempo', 'cond', 'fim', 'pairs', 'past'];
+const CN_MIN = { opin: 25, conc: 25, tempo: 20, cond: 20, fim: 12, pairs: 20, past: 25 };
+const CN_THEN = ['conjuntivo', 'indicativo', 'infinitivo', 'tinha + particípio', 'perfeito', 'imperfeito', 'perfeito composto'];
+if (CONNECT_TOPICS.length) {
+  check(CONNECT_TOPICS.length === 7, 'connect topics', `needs 7 topics (has ${CONNECT_TOPICS.length})`);
+  CONNECT_TOPICS.forEach((tp, n) => {
+    const W = `connect topic[${n}] ${tp.id}`;
+    check(tp.id === CN_IDS[n], W, `topic ${n} should be "${CN_IDS[n]}"`);
+    ['en', 'pt', 'intro', 'tip'].forEach(k => check(typeof tp[k] === 'string' && tp[k].trim(), W, `${k} missing`));
+    check(Array.isArray(tp.steps) && tp.steps.length >= 3 && tp.steps.length <= 4, W, `needs 3–4 steps (has ${tp.steps && tp.steps.length})`);
+    check(Array.isArray(tp.table) && tp.table.length >= 3, W, `needs at least 3 table rows (has ${tp.table && tp.table.length})`);
+    (tp.steps || []).forEach(s => guard(W + ' step', s));
+    (tp.table || []).forEach((r, i) => {
+      const w = `${W} row ${i}`;
+      check(Array.isArray(r) && r.length === 5 && r.every(x => typeof x === 'string' && x.trim()), w, 'row must be [connector, meaning, then-use, PT example, EN]');
+      if (Array.isArray(r)) { check(CN_THEN.includes(r[2]), w, `then-use not allowed: ${r[2]}`); guard(w, r[0]); guard(w, r[3]); }
+    });
+  });
+}
+const cnIds = new Set();
+CONNECT.forEach((x, n) => {
+  const W = `connect[${n}] ${x.id}`;
+  check(typeof x.id === 'string' && x.id && !cnIds.has(x.id), W, 'missing or duplicate id'); cnIds.add(x.id);
+  check(CN_IDS.includes(x.topic), W, `topic not allowed: ${x.topic}`);
+  check(x.mode === 'gap' || x.mode === 'join', W, `mode must be gap or join (got ${x.mode})`);
+  check(typeof x.c === 'string' && x.c.trim(), W, 'c missing');
+  check(typeof x.en === 'string' && x.en.trim(), W, 'en missing');
+  check(typeof x.why === 'string' && x.why.trim(), W, 'why missing');
+  check(Array.isArray(x.a) && x.a.length && x.a.every(s => typeof s === 'string' && s.trim()), W, 'a[] missing or empty');
+  check(Array.isArray(x.mark) && x.mark.length > 0, W, 'mark[] missing');
+  if (x.mode === 'join') check(Array.isArray(x.src) && x.src.length === 2 && x.src.every(s => typeof s === 'string' && s.trim()), W, 'join items need src[2]');
+  if (x.mode === 'gap') check(typeof x.hint === 'string' && x.hint.trim(), W, 'gap items need hint');
+  check(!!FORMS[x.v], W, `verb not in VERBS: ${x.v}`);
+  check(!!Conj.TENSE[x.t], W, `t not a tense key: ${x.t}`);
+  check([0, 1, 2, 3, 4].includes(x.p), W, 'p must be 0–4');
+  const a0 = (x.a || [''])[0];
+  if (FORMS[x.v] && FORMS[x.v][x.t]) { const f = FORMS[x.v][x.t][x.p]; check(!!f && hasWord(a0, f), W, `form "${f}" (${x.v}/${x.t}/${x.p}) not in answer "${a0}"`); }
+  (x.mark || []).forEach(m => check(hasWord(a0, m), W, `mark "${m}" not found in "${a0}"`));
+  if (typeof x.c === 'string' && !x.c.includes('/')) check(hasWord(a0, x.c), W, `connector "${x.c}" not in answer "${a0}"`);
+  const wc = words(a0); check(wc <= 18, W, `answer too long (${wc} words)`);
+  (x.a || []).forEach(s => guard(W + ' a', s)); (x.src || []).forEach(s => guard(W + ' src', s)); guard(W + ' hint', x.hint);
+});
+if (CONNECT.length) CN_IDS.forEach(t => { const c = CONNECT.filter(x => x.topic === t).length; check(c >= CN_MIN[t], 'connect coverage', `topic ${t} needs at least ${CN_MIN[t]} items (has ${c})`); });
+
 // ---------- Ler e ouvir: books and artists ----------
 const media = partial ? { BOOKS: [], ARTISTS: [] } : require(path.join(ROOT, 'data', 'media.js'));
 const bkIds = new Set();
@@ -329,6 +378,7 @@ if (!partial) {
   if (fs.existsSync(path.join(ROOT, 'data', 'verbsent.js'))) { check(VERBSENT.length >= 150, 'verbsent', `at least 150 verb sentences (has ${VERBSENT.length})`); ['pps', 'pimp', 'ppc', 'cond', 'cpres', 'cimp', 'pres', 'fut'].forEach(t => check(VERBSENT.filter(x => x.t === t).length >= 10, 'verbsent coverage', `tense ${t} needs at least 10 sentences`)); }
   check(BUILD.length >= 140, 'build', `at least 140 sentence-building items needed (has ${BUILD.length})`);
   PATS.forEach(p => check(BUILD.filter(b => b.pat === p).length >= 6, 'build coverage', `pattern "${p}" needs at least 6 items`));
+  if (fs.existsSync(path.join(ROOT, 'data', 'connect.js'))) check(CONNECT_TOPICS.length === 7 && CONNECT.length >= 150, 'connect', `needs 7 topics and at least 150 items (has ${CONNECT_TOPICS.length} / ${CONNECT.length})`);
   const nLines = DIALOGUES.reduce((a, d) => a + d.lines.length, 0);
   console.log(`${TOPIC_VOCAB.length} topic words · ${BUILD.length} sentence-building items`);
   console.log(`${CONVERSAS.length} conversations, ${CONVERSAS.reduce((a, c) => a + c.nodes.length, 0)} questions · ${MISSIONS.length} missions`);

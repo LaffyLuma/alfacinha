@@ -7,7 +7,7 @@
   const COMMON = ['ser', 'estar', 'ter', 'ir', 'fazer', 'dizer', 'poder', 'querer', 'saber', 'dar', 'ver', 'pôr'];
   const FALLBACK = ['pps', 'pimp', 'ppc', 'cond'];
   const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
-  const VS = { v: null, t: 'pres', p: 0, q: '', open: false, more1: false, more3: false, seq: false };
+  const VS = { v: null, t: 'pres', p: 0, q: '', open: false, more1: false, more3: false, seq: false, tab: 'verb' };
 
   // ---------- reverse index: any conjugated form → [{v, t, p}] ----------
   let IDX = null;
@@ -61,7 +61,17 @@
     if (VS.v) return '';
     return COMMON.filter(v => P.VERB[v]).map(v => chip({ kind: 'verb', v })).join('');
   }
+  // ---------- linking words (Aula): every connector, grouped by topic, filtered by the search box ----------
+  function linkHTML() {
+    const T = typeof CONNECT_TOPICS !== 'undefined' ? CONNECT_TOPICS : []; const n = norm(VS.q);
+    const head = '<div class="vp-h"><h3>Linking words</h3><button class="btn sm" data-act="vp-aula">Open Aula</button></div>';
+    const groups = T.map(tp => ({ tp, rows: tp.table.filter(r => !n || norm(r.join(' ')).includes(n)) })).filter(g => g.rows.length);
+    if (!groups.length) return head + '<p class="small muted">' + (T.length ? 'No connector matches "' + esc(VS.q) + '".' : 'No linking words loaded.') + '</p>';
+    return head + groups.map(g => '<section class="vp-block"><div class="vp-h"><h3>' + esc(g.tp.en) + ' <span class="tiny term vp-term">' + esc(g.tp.pt) + '</span></h3><button class="btn sm" data-act="vp-aula" data-k="' + esc(g.tp.id) + '">Topic</button></div><div class="vp-list">'
+      + g.rows.map(r => '<button class="vp-conn" data-act="say" data-say="' + esc(r[3]) + '"><span class="vp-conn-top"><b>' + esc(r[0]) + '</b>' + (P.connectTag ? P.connectTag(r[2]) : '') + '</span><span class="small muted">' + esc(r[1]) + '</span><span class="vp-conn-ex">' + P.markHTML(r[3], [r[0]]) + ' ' + ICON.speaker + '</span><span class="small muted">' + esc(r[4]) + '</span></button>').join('') + '</div></section>').join('');
+  }
   function bodyHTML() {
+    if (VS.tab === 'link') return linkHTML();
     const { v, t, p } = VS;
     if (!v) return `<p class="small muted">Look up any verb or a form you heard. It opens on what you're practising when you open it from a drill.</p>`;
     const vb = P.VERB[v], T = Conj.TENSE[t], x = P.vform(v, t, p) || {};
@@ -99,16 +109,21 @@
     root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Verb lookup');
     root.innerHTML = `<div class="vp-head"><div class="vp-grip" aria-hidden="true"></div>
         <div class="vp-top"><h2>Verbo rápido</h2><button class="iconbtn vp-x" data-act="vp-close" aria-label="Close">✕</button></div>
+        <div class="vp-tabs" role="tablist"><button class="vp-tab" role="tab" data-act="vp-tab" data-k="verb">Verbs</button><button class="vp-tab" role="tab" data-act="vp-tab" data-k="link">Linking words</button></div>
         <input type="search" id="vp-q" placeholder="Find a verb or a form you heard (fez, foste…)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Search verbs and forms">
         <div id="vp-results" class="vp-chips"></div></div>
       <div id="vp-body" class="vp-body"></div>`;
     document.body.appendChild(back); document.body.appendChild(root);
     const q = root.querySelector('#vp-q');
-    q.addEventListener('input', () => { VS.q = q.value; drawResults(); });
+    q.addEventListener('input', () => { VS.q = q.value; if (VS.tab === 'link') draw(); else drawResults(); });
     root.addEventListener('toggle', e => { const d = e.target; if (d && d.dataset && d.dataset.more) VS['more' + d.dataset.more] = d.open; }, true);
   }
-  function drawResults() { const r = root.querySelector('#vp-results'); r.innerHTML = resultsHTML(); r.hidden = !r.innerHTML; }
-  function draw() { if (!root) return; drawResults(); root.querySelector('#vp-body').innerHTML = bodyHTML(); }
+  function drawResults() { const r = root.querySelector('#vp-results'); r.innerHTML = VS.tab === 'link' ? '' : resultsHTML(); r.hidden = !r.innerHTML; }
+  function draw() {
+    if (!root) return;
+    root.querySelectorAll('.vp-tab').forEach(b => { const on = b.dataset.k === VS.tab; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    root.querySelector('#vp-q').placeholder = VS.tab === 'link' ? 'Search linking words (embora, caso, antes…)' : 'Find a verb or a form you heard (fez, foste…)';
+    drawResults(); root.querySelector('#vp-body').innerHTML = bodyHTML(); }
   // Pick a valid person for the tense (imperativo has no eu/nós; impersonal verbs only ele)
   function fix() {
     if (!VS.v || !P.VERB[VS.v]) { VS.v = null; return; }
@@ -121,6 +136,7 @@
   P.openPanel = function (ctx) {
     build();
     ctx = ctx || P.panelCtx || {};
+    if (ctx.tab) VS.tab = ctx.tab; else if (ctx.v || ctx.t) VS.tab = 'verb';
     if (ctx.v && P.VERB[ctx.v]) { VS.v = ctx.v; VS.t = ctx.t || 'pres'; VS.p = ctx.p != null ? +ctx.p : 0; }
     else if (ctx.t && Conj.TENSE[ctx.t]) { VS.t = ctx.t; }
     fix();
@@ -146,6 +162,8 @@
   // ---------- actions ----------
   act['vpanel'] = () => (VS.open ? P.closePanel() : P.openPanel());
   act['vp-close'] = () => P.closePanel();
+  act['vp-tab'] = (b) => { VS.tab = b.dataset.k; VS.q = ''; root.querySelector('#vp-q').value = ''; draw(); root.querySelector('#vp-body').scrollTop = 0; };
+  act['vp-aula'] = (b) => { P.closePanel(); if (P.openAula) P.openAula(b.dataset.k); };
   act['vp-pick'] = (b) => {
     VS.v = b.dataset.v;
     if (b.dataset.t) { VS.t = b.dataset.t; VS.p = +b.dataset.p; }

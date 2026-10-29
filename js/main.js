@@ -4,7 +4,7 @@
   const NAV = [
     ['today', 'Hoje', 'today'], ['sessao', 'Sessão', 'ritmo'], ['review', 'Rever', 'review'], ['gym', 'Verbos', 'verbs'], ['drills', 'Contexto', 'drills'],
     ['transform', 'Transformar', 'transform'], ['dialogues', 'Diálogos', 'dialog'], ['radio', 'Rádio', 'radio'],
-    ['conversas', 'Conversas', 'conversa'], ['construir', 'Construir', 'transform'], ['ritmo', 'Ritmo', 'ritmo'], ['missoes', 'Missões', 'mission'],
+    ['conversas', 'Conversas', 'conversa'], ['construir', 'Construir', 'transform'], ['aula', 'Aula', 'grammar'], ['ritmo', 'Ritmo', 'ritmo'], ['missoes', 'Missões', 'mission'],
     ['ler', 'Ler e ouvir', 'grammar'], ['write', 'Escrever', 'write'], ['partner', 'A dois', 'partner'], ['sep'], ['grammar', 'Gramática', 'grammar'], ['capture', 'Capture', 'capture'],
     ['progress', 'Progresso', 'progress'], ['settings', 'Definições', 'settings'],
   ];
@@ -14,7 +14,7 @@
 
   function renderChrome(r) {
     const rr = r === 'tables' || r === 'sprint' ? 'gym' : r;
-    const tr = ['transform', 'dialogues', 'radio', 'conversas', 'ritmo', 'missoes', 'construir'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
+    const tr = ['transform', 'dialogues', 'radio', 'conversas', 'ritmo', 'missoes', 'construir', 'aula'].includes(r) ? 'speak' : rr; // the speaking pages live under the Falar tab
     document.getElementById('sidebar').innerHTML = `<a class="brand" href="#/today"><span class="brand-mark">A</span>Alfacinha</a>` +
       NAV.map(n => n[0] === 'sep' ? '<div class="sep"></div>' : `<a class="nav ${rr === n[0] ? 'on' : ''}" href="#/${n[0]}">${ICON[n[2]]}${n[1]}</a>`).join('');
     const moreRoutes = ['more', 'drills', 'write', 'grammar', 'capture', 'progress', 'settings', 'tables', 'partner', 'ler'];

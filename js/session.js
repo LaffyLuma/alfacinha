@@ -11,7 +11,7 @@
   const who = (t, p) => P.personLabel(t, p).split(' / ')[0];
   const VS = typeof VERBSENT !== 'undefined' ? VERBSENT : [];
   // Base time window per kind (ms). It shrinks 6% after a fast "Got it" and grows 10% after Slow / Missed.
-  const WIN = { verb: 5000, card: 8000, vsent: 9000, trans: 12000, build: 12000, line: 10000 };
+  const WIN = { verb: 5000, card: 8000, vsent: 9000, trans: 12000, build: 12000, connect: 12000, line: 10000 };
   const fun = () => { const s = S(); if (!s.fun) s.fun = {}; const f = s.fun; f.win = f.win || {}; f.pb = f.pb || {}; f.bosses = f.bosses || {}; f.km = f.km || 0; return f; };
   const win = k => Math.round(fun().win[k] || WIN[k]);
   const KM = { 3: 0.5, 2: 0.3, 1: 0.1 };
@@ -96,6 +96,10 @@
       answer: P.markHTML(b.a[0], b.mark), say: b.a[0], cue: '', help: esc(b.why),
       grade(g) { const x = S().build[b.id] || { n: 0, ok: 0, ema: 0.5, last: 0 }; x.n++; if (g === 3) x.ok++; x.ema = x.ema * 0.7 + P.gradeScore(g) * 0.3; x.last = now(); S().build[b.id] = x; P.bump('build'); } };
   }
+  function connectItem(x) {
+    return { kind: 'connect', key: 'cn|' + x.id, label: P.aulaLabel(x), front: P.aulaFront(x), answer: P.markHTML(x.a[0], x.mark), say: x.a[0], cue: '', help: esc(x.why),
+      grade(g) { P.aulaGrade(x.id, g); if (g === 1 && x.v && x.t && x.p != null) P.addFormCard(x.v, x.t, x.p); } };
+  }
   const leastSeen = (arr, statOf, n) => P.shuffle(arr).sort((a, b) => ((statOf(a) || {}).ema ?? -1) - ((statOf(b) || {}).ema ?? -1)).slice(0, n);
 
   // ---------- bosses: recurring slips ----------
@@ -134,6 +138,7 @@
     leastSeen(vsPool, x => S().conj[x.v + '|' + x.t], Math.ceil(n / 3)).forEach(x => sp.push(vsentItem(x)));
     for (let i = 0; i < Math.ceil(n / 3); i++) { const p = P.trPick ? P.trPick() : null; if (p) sp.push(transItem(p.id, p.idx)); }
     leastSeen(BUILD, b => S().build[b.id], Math.floor(n / 3)).forEach(b => sp.push(buildItem(b)));
+    if (P.aulaFront && typeof CONNECT !== 'undefined') leastSeen(CONNECT, x => S().aula[x.id], Math.max(1, Math.floor(n / 4))).forEach(x => sp.push(connectItem(x)));
     stages.push({ k: 'speak', items: P.shuffle(sp) });
     const boss = bossPick();
     if (boss) stages.push({ k: 'boss', boss, hp: 5, max: long ? 14 : 10, items: [] });
